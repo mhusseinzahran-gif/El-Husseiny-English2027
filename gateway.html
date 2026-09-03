@@ -272,7 +272,7 @@
         }
         localStorage.setItem("current_active_window", JSON.stringify(foundStudent));
         errorMsg.classList.add("hidden");
-        window.location.href = "lesson-view.html";
+        window.location.href = "student-dashboard.html";
       } else {
         let attemptsKey = "failedAttempts_" + idInput;
         let failedAttempts = localStorage.getItem(attemptsKey) ? parseInt(localStorage.getItem(attemptsKey)) : 0;
