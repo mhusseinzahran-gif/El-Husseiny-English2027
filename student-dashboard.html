@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Husseiny English | Student Dashboard</title>
+    <!-- مكتبة التايليند للتصميم -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { brand: { dark: '#0f172a', card: '#1e293b', accent: '#fbbf24' } }
+                }
+            }
+        }
+    </script>
+    <!-- أيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-brand-dark text-slate-800 dark:text-slate-200 min-h-screen p-6 transition-colors duration-300" onload="loadStudentDashboard()">
+
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <!-- ترويسة ملف الطالب -->
+        <header class="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-brand-card p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xl gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-amber-400 text-slate-900 rounded-2xl flex items-center justify-center font-black text-2xl shadow-lg">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black text-slate-900 dark:text-white">Mohamed Hussein Junior</h1>
+                    <p class="text-xs text-slate-400">الصف الثاني الإعدادي - منصة مستر محمد الحسيني</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <!-- زر تبديل الوضع (الليل / النهار) -->
+                <button onclick="toggleDarkMode()" class="w-10 h-10 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl flex items-center justify-center text-amber-500 transition shadow-sm border border-slate-200 dark:border-slate-700" title="تبديل الوضع">
+                    <i id="themeIcon" class="fa-solid fa-moon text-sm"></i>
+                </button>
+
+                <!-- زر رصيد العملات يوجه لصفحة student-coins.html -->
+                <a href="student-coins.html" class="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 text-amber-500 font-black text-sm transition shadow-sm" title="عرض تفاصيل رصيد العملات">
+                    <i class="fa-solid fa-coins"></i>
+                    <span>Coin 450</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- بنر المشاركة -->
+        <div class="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 p-6 rounded-3xl text-slate-900 shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-slate-900 text-amber-400 rounded-2xl flex items-center justify-center text-xl shadow-md">
+                    <i class="fa-solid fa-globe"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-black">شارك المنصة مع أصدقائك واربح +Coin 50!</h3>
+                    <p class="text-xs opacity-90">Share Platform Link - ساعد زملائك في الانضمام لأقوى منصة إنجليزية</p>
+                </div>
+            </div>
+            <button onclick="sharePlatformLink()" class="bg-slate-900 hover:bg-slate-800 text-amber-400 px-5 py-3 rounded-xl font-black text-xs transition shadow-md flex items-center gap-2">
+                <i class="fa-solid fa-copy"></i> نسخ لينك المنصة
+            </button>
+        </div>
+
+        <!-- أقسام سريعة (الملف - المستوى - العملات) موجهة لملفاتك المنفصلة -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <a href="student-profile.html" class="bg-white dark:bg-brand-card p-5 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xl flex items-center gap-4 text-right transition hover:border-amber-400 group">
+                <div class="w-12 h-12 bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center font-bold text-lg border border-blue-500/20 group-hover:bg-blue-500 group-hover:text-white transition">
+                    <i class="fa-solid fa-user-gear"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs text-slate-400 font-bold">الملف الشخصي</h4>
+                    <p class="text-sm font-black text-slate-900 dark:text-white">إدارة البيانات</p>
+                </div>
+            </a>
+
+            <a href="student-progress.html" class="bg-white dark:bg-brand-card p-5 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xl flex items-center gap-4 text-right transition hover:border-amber-400 group">
+                <div class="w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-2xl flex items-center justify-center font-bold text-lg border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-white transition">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs text-slate-400 font-bold">مستوى التقدم</h4>
+                    <p class="text-sm font-black text-slate-900 dark:text-white">متابعة الدرجات</p>
+                </div>
+            </a>
+
+            <a href="student-coins.html" class="bg-white dark:bg-brand-card p-5 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xl flex items-center gap-4 text-right transition hover:border-amber-400 group">
+                <div class="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center font-bold text-lg border border-amber-500/20 group-hover:bg-amber-500 group-hover:text-slate-900 transition">
+                    <i class="fa-solid fa-coins"></i>
+                </div>
+                <div>
+                    <h4 class="text-xs text-slate-400 font-bold">العملات والنجوم</h4>
+                    <p class="text-sm font-black text-slate-900 dark:text-white">رصيد المكافآت</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- قسم الحصص الدراسية المتاحة -->
+        <div class="bg-white dark:bg-brand-card p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-xl space-y-4">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-700">
+                <h3 class="text-sm font-black text-slate-900 dark:text-white">الفصل الدراسي الأول</h3>
+                <span class="text-xs text-slate-400 font-bold">Available Lessons / الحصص الدراسية المتاحة</span>
+            </div>
+
+            <div id="lessonsContainer" class="space-y-3">
+                <!-- تتعبأ ديناميكياً -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- أكواد الجافاسكريبت -->
+    <script>
+        function loadStudentDashboard() {
+            const container = document.getElementById('lessonsContainer');
+            container.innerHTML = "";
+
+            let defaultLessons = [
+                { id: "1", title: "شرح قواعد 2 Unit وحل مهارات القراءة والكتابة" },
+                { id: "2", title: "الحصة الثانية: Lesson Four (Unit 2)" },
+                { id: "3", title: "الحصة الثالثة: Review & Tests" }
+            ];
+
+            defaultLessons.forEach((lesson, index) => {
+                let lessonBox = document.createElement('div');
+                lessonBox.className = "bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4 transition hover:border-amber-400/50";
+                
+                lessonBox.innerHTML = `
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <div class="w-10 h-10 bg-amber-400 text-slate-900 rounded-xl flex items-center justify-center font-black text-sm shadow-md">
+                            ${index + 1}
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-black text-slate-900 dark:text-white">${lesson.title}</h4>
+                            <p class="text-[11px] text-slate-400">مدة الحصة: 45 دقيقة | تشمل الواجب والاختبارات</p>
+                        </div>
+                    </div>
+                    <a href="lesson-view.html?id=${lesson.id}" class="bg-amber-400 hover:bg-amber-500 text-slate-900 px-5 py-2.5 rounded-xl font-black text-xs transition shadow-md flex items-center gap-2 w-full md:w-auto justify-center">
+                        دخول الحصة <i class="fa-solid fa-arrow-left"></i>
+                    </a>
+                `;
+                container.appendChild(lessonBox);
+            });
+        }
+
+        function sharePlatformLink() {
+            navigator.clipboard.writeText(window.location.href);
+            alert("✨ تم نسخ رابط المنصة بنجاح! شاركه مع أصدقائك.");
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                html.classList.add('dark');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+    </script>
+
+</body>
+</html>

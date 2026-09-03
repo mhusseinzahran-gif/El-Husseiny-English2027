@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Husseiny English | Ultimate Teacher Control Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                dark: '#0B132B',
+                card: '#1C2541',
+                accent: '#3A506B',
+                gold: '#F4D35E'
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Cairo', sans-serif; } </style>
+</head>
+<body class="bg-slate-50 dark:bg-brand-dark text-slate-800 dark:text-slate-100 min-h-screen flex flex-col justify-between transition-colors duration-300 antialiased" onload="initTeacherDashboard()">
+
+  <!-- الترويسة العلوية -->
+  <header class="w-full max-w-7xl mx-auto px-6 py-5 flex flex-wrap justify-between items-center gap-4 z-50">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-full bg-white dark:bg-brand-card border-2 border-amber-400 shadow-md overflow-hidden flex items-center justify-center">
+        <img src="mr-mohamed.png" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/50'">
+      </div>
+      <div>
+        <h1 class="text-sm font-black text-slate-900 dark:text-white">لوحة تحكم المعلم الشاملة (El Husseiny Platform)</h1>
+        <p class="text-[10px] text-slate-400">إدارة بروفايلات الطلاب، الحصص، وأقسام المنصة باحترافية</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <a href="lesson-view.html" class="bg-slate-100 dark:bg-brand-card hover:bg-slate-200 dark:hover:bg-slate-800 px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-slate-200 dark:border-slate-700 shadow-sm">
+        معاينة صفحة الطالب <i class="fa-solid fa-arrow-left"></i>
+      </a>
+      <button onclick="toggleTheme()" class="w-11 h-11 rounded-2xl bg-white dark:bg-brand-card shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-amber-500 hover:scale-105 transition-all">
+        <i id="themeIcon" class="fa-solid fa-sun text-base"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- المحتوى الرئيسي -->
+  <main class="max-w-7xl mx-auto px-6 py-6 w-full space-y-8">
+    
+    <!-- 1. القسم الأول: تسجيل طالب جديد بالسنتر -->
+    <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl space-y-6">
+      <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-4">
+        <div>
+          <h3 class="text-base font-black text-slate-900 dark:text-white">1. تسجيل طالب جديد بالسنتر</h3>
+          <p class="text-xs text-slate-400">توليد ID فريد (6 خانات حروف وأرقام)</p>
+        </div>
+        <span class="bg-amber-400/10 text-amber-500 text-xs font-black px-3 py-1.5 rounded-xl border border-amber-400/20">
+          إدارة البروفايلات ⚙️
+        </span>
+      </div>
+
+      <form id="addStudentForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">اسم الطالب الثلاثي</label>
+          <input type="text" id="inName" required placeholder="محمد أحمد إبراهيم" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400">
+        </div>
+        
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">كود الطالب (ID)</label>
+          <div class="flex gap-2">
+            <input type="text" id="inStudentId" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs font-mono font-black text-amber-400 focus:outline-none focus:border-amber-400" dir="ltr">
+            <button type="button" onclick="generateNewId()" class="bg-slate-200 dark:bg-slate-800 hover:bg-amber-400 hover:text-blue-950 px-3 rounded-xl text-xs font-black transition" title="توليد كود جديد">
+              <i class="fa-solid fa-rotate"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">هاتف الطالب</label>
+          <input type="text" id="inStudentPhone" required placeholder="01112223344" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400" dir="ltr">
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">هاتف ولي الأمر</label>
+          <input type="text" id="inParentPhone" required placeholder="01009988776" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400" dir="ltr">
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">الصف الدراسي</label>
+          <select id="inGrade" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-amber-400 focus:outline-none">
+            <optgroup label="المرحلة الابتدائية">
+              <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
+              <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
+              <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
+              <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
+              <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
+              <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
+            </optgroup>
+            <optgroup label="المرحلة الإعدادية">
+              <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
+              <option value="الصف الثاني الإعدادي" selected>الصف الثاني الإعدادي</option>
+              <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
+            </optgroup>
+            <optgroup label="المرحلة الثانوية">
+              <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
+              <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
+              <option value="الصف الثالث الثانوي">الصف الثالث الثانوي</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">الجروب</label>
+          <input type="text" id="inGroup" value="مجموعة السبت" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-amber-500 focus:outline-none">
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">رصيد الـ Coins الابتدائي</label>
+          <input type="number" id="inCoins" value="150" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-amber-400 focus:outline-none">
+        </div>
+        <div class="md:col-span-3 flex justify-end pt-2">
+          <button type="submit" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-6 py-3 rounded-xl font-black text-xs transition shadow-md flex items-center gap-2">
+            <i class="fa-solid fa-user-plus"></i> حفظ بيانات الطالب وتسجيله
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- 2. القسم الثاني: سجلات الطلاب المسجلين -->
+    <div class="space-y-6">
+      <div class="bg-white dark:bg-brand-card p-4 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-md space-y-4">
+        <h3 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+          <i class="fa-solid fa-id-card text-amber-500"></i> 2. سجلات الطلاب المسجلين (بحث بزر OK)
+        </h3>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="text-[10px] text-slate-400 font-bold block mb-1">تصفية حسب الصف:</label>
+            <select id="filterGrade" onchange="loadTeacherProfiles()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-amber-400 focus:outline-none">
+              <option value="">جميع الصفوف الدراسية</option>
+              <optgroup label="المرحلة الابتدائية">
+                <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
+                <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
+                <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
+                <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
+                <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
+                <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
+              </optgroup>
+              <optgroup label="المرحلة الإعدادية">
+                <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
+                <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
+                <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
+              </optgroup>
+              <optgroup label="المرحلة الثانوية">
+                <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
+                <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
+                <option value="الصف الثالث الثانوي">الصف الثالث الثانوي</option>
+              </optgroup>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] text-slate-400 font-bold block mb-1">تصفية حسب الجروب:</label>
+            <select id="filterGroup" onchange="loadTeacherProfiles()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-amber-400 focus:outline-none">
+              <option value="">جميع المجموعات والجروبات</option>
+              <option value="مجموعة السبت">مجموعة السبت</option>
+              <option value="مجموعة الأحد">مجموعة الأحد</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] text-slate-400 font-bold block mb-1">بحث برقم الـ ID أو اسم الطالب:</label>
+            <div class="flex gap-2">
+              <input type="text" id="searchKeyword" placeholder="ابحث بالاسم أو الـ ID..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400">
+              <button type="button" onclick="loadTeacherProfiles()" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-4 py-2 rounded-xl text-xs font-black transition shadow">OK</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="teacherProfilesContainer" class="space-y-4"></div>
+    </div>
+
+    <!-- 3. القسم الثالث: جدول المتابعة الفورية -->
+    <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl space-y-6 overflow-x-auto">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 dark:border-slate-800 pb-4 min-w-[900px]">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-400/10 text-amber-500 flex items-center justify-center text-lg font-black border border-amber-400/20">
+            <i class="fa-solid fa-clipboard-user"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-900 dark:text-white">3. متابعة درجات وسلوك الطلاب - جدول تفاعلي مفعل</h3>
+            <p class="text-xs text-slate-400">رصد الحضور، الواجبات، الاختبارات السريعة، وتوثيق درجات وسلوك الطلاب تلقائياً</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <select id="attFilterGrade" onchange="loadAttendanceTable()" class="bg-slate-50 dark:bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold text-amber-400 focus:outline-none">
+            <option value="">جميع الصفوف</option>
+            <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
+            <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
+            <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
+            <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
+            <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
+            <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
+            <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
+            <option value="الصف الثاني الإعدادي">الصف الثاني الإعدادي</option>
+            <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
+            <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
+            <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
+            <option value="الصف الثالث الثانوي">الصف الثالث الثانوي</option>
+          </select>
+          <select id="attFilterGroup" onchange="loadAttendanceTable()" class="bg-slate-50 dark:bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold text-amber-400 focus:outline-none">
+            <option value="">جميع المجموعات</option>
+            <option value="مجموعة السبت">مجموعة السبت</option>
+            <option value="مجموعة الأحد">مجموعة الأحد</option>
+          </select>
+        </div>
+      </div>
+
+      <table class="w-full text-right border-collapse min-w-[950px]">
+        <thead>
+          <tr class="bg-slate-900 text-slate-300 text-[11px] font-bold border-b border-slate-800">
+            <th class="p-3.5 rounded-r-2xl">اسم الطالب</th>
+            <th class="p-3.5">الحضور (Attendance)</th>
+            <th class="p-3.5">الواجب (Homework)</th>
+            <th class="p-3.5">الإملاء (Dictation)</th>
+            <th class="p-3.5">الاختبار الورقي</th>
+            <th class="p-3.5">الاختبار الإلكتروني</th>
+            <th class="p-3.5">سلوك الطالب</th>
+            <th class="p-3.5 rounded-l-2xl text-center">إدارة الطوارئ وحظر الطالب</th>
+          </tr>
+        </thead>
+        <tbody id="attendanceTableBody" class="text-xs font-bold divide-y divide-slate-800/50"></tbody>
+      </table>
+    </div>
+
+    <!-- 4. القسم الرابع: إدارة الحصص الشاملة والمحتوى -->
+    <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl space-y-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-slate-100 dark:border-slate-700">
+        <div>
+          <h2 class="text-xl font-black text-slate-900 dark:text-white">4. إدارة الحصص والمحتوى (حسب الصف والجروب)</h2>
+          <p class="text-xs text-slate-400">تحكم كامل في الروابط، عنوان الحصة، وصفحات الواجب القادم لكل مجموعة</p>
+        </div>
+        <button onclick="saveLessonChanges()" class="bg-amber-400 hover:bg-amber-500 text-slate-900 px-5 py-2.5 rounded-xl font-black text-xs transition shadow-md flex items-center gap-2">
+          <i class="fa-solid fa-floppy-disk"></i> حفظ وتحديث بيانات الحصة
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+        <div>
+          <label class="text-xs font-bold text-slate-400 block mb-1">اختر الصف الدراسي للحصة:</label>
+          <select id="lessonGradeTarget" onchange="changeLesson()" class="w-full bg-white dark:bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-amber-400 focus:outline-none">
+            <optgroup label="المرحلة الابتدائية">
+              <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
+              <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
+              <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
+              <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
+              <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
+              <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
+            </optgroup>
+            <optgroup label="المرحلة الإعدادية">
+              <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
+              <option value="الصف الثاني الإعدادي" selected>الصف الثاني الإعدادي</option>
+              <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
+            </optgroup>
+            <optgroup label="المرحلة الثانوية">
+              <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
+              <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
+              <option value="الصف الثالث الثانوي">الصف الثالث الثانوي</option>
+            </optgroup>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-400 block mb-1">اختر المجموعة (الجروب):</label>
+          <select id="lessonGroupTarget" onchange="changeLesson()" class="w-full bg-white dark:bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-amber-400 focus:outline-none">
+            <option value="مجموعة السبت">مجموعة السبت</option>
+            <option value="مجموعة الأحد">مجموعة الأحد</option>
+            <option value="جميع المجموعات">جميع المجموعات (عام)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 bg-slate-50 dark:bg-slate-900/80 p-5 rounded-2xl border border-amber-400/30">
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-amber-400 flex items-center gap-2">
+            <i class="fa-solid fa-heading"></i> عنوان الحصة أو تاريخها:
+          </label>
+          <input type="text" id="lessonTitleInput" placeholder="مثال: Unit 4 - Lesson 1 (حصّة السبت)" class="w-full bg-white dark:bg-slate-800 border border-slate-700 px-3.5 py-2.5 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-amber-400">
+        </div>
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-amber-400 flex items-center gap-2">
+            <i class="fa-solid fa-book-open"></i> صفحات الواجب للحصة القادمة:
+          </label>
+          <input type="text" id="homeworkPagesInput" placeholder="مثال: حل صفحة 45 و 46 من كتاب المعاصر" class="w-full bg-white dark:bg-slate-800 border border-slate-700 px-3.5 py-2.5 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-amber-400">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 bg-slate-50 dark:bg-slate-900/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/60">
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+            <i class="fa-solid fa-video text-blue-500"></i> رابط فيديو الشرح (إدارة وفحص المحتوى):
+          </label>
+          <input type="text" id="videoUrlInput" placeholder="رابط الفيديو..." class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-amber-400">
+        </div>
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+            <i class="fa-solid fa-file-pdf text-rose-500"></i> ملزمة الدرس (PDF أو صورة):
+          </label>
+          <div class="flex gap-2">
+            <input type="text" id="pdfUrlInput" placeholder="رابط الملف أو الصورة..." class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-amber-400">
+            <input type="file" id="lessonFilePicker" accept=".pdf,image/*" class="hidden" onchange="handleLessonFileUpload(event)">
+            <button type="button" onclick="document.getElementById('lessonFilePicker').click()" class="bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white px-3 rounded-xl text-xs font-bold transition border border-rose-500/20"><i class="fa-solid fa-upload"></i></button>
+          </div>
+        </div>
+        <div class="space-y-2">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+            <i class="fa-solid fa-laptop-code text-emerald-500"></i> رابط الاختبار الإلكتروني:
+          </label>
+          <input type="text" id="quizUrlInput" placeholder="رابط الاختبار..." class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-amber-400">
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. القسم الخامس: التحكم في الفيديوهات والمحتوى المرفوع (تعديل وحذف فوري) -->
+    <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl space-y-6">
+      <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-4">
+        <div>
+          <h3 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+            <i class="fa-solid fa-film text-amber-500"></i> 5. التحكم في الفيديوهات (استعراض، تعديل، أو حذف بنقرة واحدة)
+          </h3>
+          <p class="text-xs text-slate-400">إدارة ومراجعة جميع الفيديوهات المسجلة والمرفوعة على المنصة لكل الصفوف</p>
+        </div>
+        <span class="bg-blue-500/10 text-blue-400 text-xs font-black px-3 py-1.5 rounded-xl border border-blue-500/20">
+          إدارة المرئيات 🎬
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs font-bold text-slate-400 block mb-1">اختر الصف لاستعراض فيديوهاته:</label>
+          <select id="videoFilterGrade" onchange="loadManagedVideos()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-amber-400 focus:outline-none">
+            <option value="الصف الثاني الإعدادي" selected>الصف الثاني الإعدادي</option>
+            <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
+            <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
+            <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
+            <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
+            <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
+            <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
+            <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
+            <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
+            <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
+            <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
+            <option value="الصف الثالث الثانوي">الصف الثالث الثانوي</option>
+          </select>
+        </div>
+        <div class="flex items-end">
+          <button type="button" onclick="loadManagedVideos()" class="w-full bg-slate-100 dark:bg-slate-800 hover:bg-amber-400 hover:text-blue-950 text-slate-300 py-2 rounded-xl text-xs font-bold transition shadow">
+            <i class="fa-solid fa-rotate"></i> تحديث قائمة الفيديوهات
+          </button>
+        </div>
+      </div>
+
+      <div id="managedVideosContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+
+    <!-- 6. القسم السادس: لوحة الشرف وأعلى 5 طلاب -->
+    <div class="bg-gradient-to-br from-amber-500/10 via-brand-card to-brand-card border-2 border-amber-400/40 rounded-3xl p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-amber-400/20 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-400 text-blue-950 flex items-center justify-center text-lg font-black shadow-md">
+            <i class="fa-solid fa-trophy"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-900 dark:text-white">6. لوحة الشرف ومكافآت التميز (أعلى 5 طلاب)</h3>
+            <p class="text-xs text-amber-500 font-bold">فرز وترتيب تلقائي دقيق لأبطال الفصل بناءً على رصيد الـ Coins لكل صف</p>
+          </div>
+        </div>
+        <span class="bg-amber-400 text-blue-950 font-black text-xs px-3 py-1.5 rounded-xl shadow">تكريم التميز 🌟</span>
+      </div>
+
+      <div class="flex items-center gap-3 pt-2">
+        <label class="text-xs font-bold text-slate-300">اختر الصف الدراسي:</label>
+        <select id="gradeSelectFilter" onchange="loadTeacherProfiles()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold text-amber-400 focus:outline-none">
+          <optgroup label="المرحلة الابتدائية">
+            <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
+            <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
+            <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
+            <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
+            <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
+            <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
+          </optgroup>
+          <optgroup label="المرحلة الإعدادية">
+            <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
+            <option value="الصف الثاني الإعدادي" selected>الصف الثاني الإعدادي</option>
+            <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
+          </optgroup>
+          <optgroup label="المرحلة الثانوية">
+            <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
+            <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
+            <option value="الصف الثالث الثانوي">الصف الثالث الثانوي</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div id="topFiveContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 pt-2"></div>
+    </div>
+
+    <!-- 7. القسم السابع: نشر الحصص الأونلاين وإدارة محتوى الزوار -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 p-6 rounded-3xl shadow-xl space-y-4">
+        <h3 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+          <i class="fa-solid fa-cloud-arrow-up text-amber-500"></i> 7. نشر حصة أونلاين أو بث مباشر
+        </h3>
+        <form id="advancedOnlineLessonForm" class="space-y-3" onsubmit="saveAdvancedLesson(event)">
+          <div>
+            <label class="text-xs font-bold text-slate-400">الصف الدراسي</label>
+            <select id="advTargetGrade" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white">
+              <optgroup label="المرحلة الابتدائية">
+                <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
+                <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
+                <option value="الصف الثالث الابتدائي">الصف الثالث الابتدائي</option>
+                <option value="الصف الرابع الابتدائي">الصف الرابع الابتدائي</option>
+                <option value="الصف الخامس الابتدائي">الصف الخامس الابتدائي</option>
+                <option value="الصف السادس الابتدائي">الصف السادس الابتدائي</option>
+              </optgroup>
+              <optgroup label="المرحلة الإعدادية">
+                <option value="الصف الأول الإعدادي">الصف الأول الإعدادي</option>
+                <option value="الصف الثاني الإعدادي" selected>الصف الثاني الإعدادي</option>
+                <option value="الصف الثالث الإعدادي">الصف الثالث الإعدادي</option>
+              </optgroup>
+              <optgroup label="المرحلة الثانوية">
+                <option value="الصف الأول الثانوي">الصف الأول الثانوي</option>
+                <option value="الصف الثاني الثانوي">الصف الثاني الثانوي</option>
+                <option value="الصف الثالث الثانوي">الصف الثالث الثانوي</option>
+              </optgroup>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-400">عنوان الحصة / البث المباشر</label>
+            <input type="text" id="advLessonTitle" required placeholder="مراجعة شاملة ليلة الامتحان (بث مباشر)" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white">
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-400">رابط البث المباشر أو الفيديو المسجل</label>
+            <div class="flex gap-2">
+              <input type="text" id="advLessonLink" required placeholder="رابط زوم أو يوتيوب لايف..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white">
+              <input type="file" id="advFilePicker" accept=".pdf,image/*" class="hidden" onchange="handleAdvFileUpload(event)">
+              <button type="button" onclick="document.getElementById('advFilePicker').click()" class="bg-amber-400 text-blue-950 px-3 rounded-xl text-xs font-bold"><i class="fa-solid fa-upload"></i></button>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-amber-400">إعلان مواعيد البث المباشر (نصي للتنبيه):</label>
+            <input type="text" id="advLiveSchedule" placeholder="مثال: موعد البث القادم يوم الجمعة الساعة 8 مساءً" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white">
+          </div>
+          <button type="submit" class="w-full bg-amber-400 hover:bg-amber-500 text-blue-950 py-2.5 rounded-xl font-black text-xs transition shadow">نشر الحصة أو البث المباشر</button>
+        </form>
+      </div>
+
+      <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 p-6 rounded-3xl shadow-xl space-y-4">
+        <h3 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+          <i class="fa-solid fa-globe text-amber-500"></i> إدارة محتوى صفحة الزوار
+        </h3>
+        <form id="visitorContentForm" class="space-y-3" onsubmit="saveVisitorItem(event)">
+          <div>
+            <label class="text-xs font-bold text-slate-400">القسم المستهدف للزوار</label>
+            <select id="visitorSectionType" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white">
+              <option value="notes">إرشادات وتوجيهات هامة</option>
+              <option value="videos">فيديوهات تجريبية</option>
+              <option value="pdfs">ملازم استرشادية (PDF أو صور)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-400">عنوان العنصر</label>
+            <input type="text" id="visitorItemTitle" required placeholder="ملخص قواعد الترم الأول..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white">
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-400">رابط المحتوى أو ارفع ملف/صورة</label>
+            <div class="flex gap-2">
+              <input type="text" id="visitorItemLink" required placeholder="رابط أو ملف مرفق..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white">
+              <input type="file" id="visitorFilePicker" accept=".pdf,image/*" class="hidden" onchange="handleVisitorFileUpload(event)">
+              <button type="button" onclick="document.getElementById('visitorFilePicker').click()" class="bg-amber-400 text-blue-950 px-3 rounded-xl text-xs font-bold"><i class="fa-solid fa-upload"></i></button>
+            </div>
+          </div>
+          <button type="submit" class="w-full bg-amber-400 hover:bg-amber-500 text-blue-950 py-2.5 rounded-xl font-black text-xs transition shadow">نشر في صفحة الزوار</button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="w-full text-center py-6 text-[11px] text-slate-400 dark:text-slate-500 font-bold">
+    El Husseiny English - Created by Mr. Mohamed Hussein © 2026
+  </footer>
+
+  <script>
+    let studentsData = JSON.parse(localStorage.getItem('el_husseiny_students')) || [
+      { id: "MHD782", name: "يوسف أحمد محمود", grade: "الصف الثاني الإعدادي", group: "مجموعة السبت", phone: "01112223344", parentPhone: "01009988776", coins: 180, attendance: "حاضر", homework: "ممتاز", dictation: "20/20", paperExam: "18", onlineExam: "10/10", behavior: "ممتاز", isBanned: false },
+      { id: "ENG914", name: "فاطمة محمد إبراهيم", grade: "الصف الثاني الإعدادي", group: "مجموعة السبت", phone: "01223344556", parentPhone: "01011223344", coins: 210, attendance: "حاضر", homework: "جيد جداً", dictation: "19/20", paperExam: "19", onlineExam: "10/10", behavior: "متميز", isBanned: false }
+    ];
+
+    document.getElementById('addStudentForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const newStudent = {
+        id: document.getElementById('inStudentId').value,
+        name: document.getElementById('inName').value,
+        grade: document.getElementById('inGrade').value,
+        group: document.getElementById('inGroup').value,
+        phone: document.getElementById('inStudentPhone').value,
+        parentPhone: document.getElementById('inParentPhone').value,
+        coins: parseInt(document.getElementById('inCoins').value) || 0,
+        attendance: "حاضر",
+        homework: "لم يُقيم",
+        dictation: "0/20",
+        paperExam: "0",
+        onlineExam: "0/10",
+        behavior: "جيد",
+        isBanned: false
+      };
+      studentsData.push(newStudent);
+      saveAndRefresh();
+      this.reset();
+      generateNewId();
+      alert("تم تسجيل الطالب بنجاح وتفعيل كود الدخول بالمنصة!");
+    });
+
+    function saveAndRefresh() {
+      localStorage.setItem('el_husseiny_students', JSON.stringify(studentsData));
+      loadTeacherProfiles();
+      loadAttendanceTable();
+    }
+
+    function loadTeacherProfiles() {
+      const container = document.getElementById('teacherProfilesContainer');
+      const filterGrade = document.getElementById('filterGrade').value;
+      const filterGroup = document.getElementById('filterGroup').value;
+      const keyword = document.getElementById('searchKeyword').value.toLowerCase().trim();
+      const topGradeSelect = document.getElementById('gradeSelectFilter').value;
+
+      container.innerHTML = "";
+      
+      let filtered = studentsData.filter(st => {
+        let matchesGrade = filterGrade === "" || st.grade === filterGrade;
+        let matchesGroup = filterGroup === "" || st.group === filterGroup;
+        let matchesKeyword = keyword === "" || st.name.toLowerCase().includes(keyword) || st.id.toLowerCase().includes(keyword);
+        return matchesGrade && matchesGroup && matchesKeyword;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="bg-white dark:bg-brand-card p-6 rounded-2xl text-center text-slate-400 text-xs font-bold border border-slate-700">لا توجد سجلات مطابقة لنتيجة البحث</div>`;
+      } else {
+        filtered.forEach(st => {
+          let card = document.createElement('div');
+          card.className = "bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 p-5 rounded-3xl shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4";
+          card.innerHTML = `
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-amber-400/10 text-amber-400 border border-amber-400/20 flex items-center justify-center font-mono font-black text-sm">
+                ${st.id}
+              </div>
+              <div class="space-y-1">
+                <h4 class="text-sm font-black text-slate-900 dark:text-white">${st.name} ${st.isBanned ? '<span class="text-rose-500 text-[10px] bg-rose-500/10 px-2 py-0.5 rounded-md font-bold">محظور</span>' : ''}</h4>
+                <p class="text-[11px] text-slate-400 font-bold">${st.grade} | <span class="text-amber-500">${st.group}</span></p>
+                <div class="flex gap-3 text-[10px] text-slate-500 font-bold">
+                  <span>هاتف الطالب: <a href="tel:${st.phone}" class="text-blue-400" dir="ltr">${st.phone}</a></span>
+                  <span>ولي الأمر: <a href="tel:${st.parentPhone}" class="text-blue-400" dir="ltr">${st.parentPhone}</a></span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-3 md:pt-0 border-slate-100 dark:border-slate-800">
+              <div class="text-left">
+                <span class="text-[10px] text-slate-400 block font-bold">رصيد الـ Coins</span>
+                <span class="text-xs font-black text-amber-400">${st.coins} 🪙</span>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="toggleBanStudent('${st.id}')" class="px-3 py-2 rounded-xl text-xs font-bold transition ${st.isBanned ? 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white' : 'bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white'}" title="إدارة الحظر">
+                  <i class="fa-solid fa-ban"></i> ${st.isBanned ? 'فك الحظر' : 'حظر'}
+                </button>
+                <button onclick="editStudent('${st.id}')" class="bg-slate-100 dark:bg-slate-800 hover:bg-amber-400 hover:text-blue-950 text-slate-300 px-3 py-2 rounded-xl text-xs font-bold transition">
+                  <i class="fa-solid fa-pen"></i> تعديل
+                </button>
+                <button onclick="deleteStudent('${st.id}')" class="bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white px-3 py-2 rounded-xl text-xs font-bold transition">
+                  <i class="fa-solid fa-trash"></i> حذف
+                </button>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      // تحديث لوحة الشرف (أعلى 5 طلاب حسب الصف الدراسي - مرتبة بدقة تلقائياً)
+      const topContainer = document.getElementById('topFiveContainer');
+      topContainer.innerHTML = "";
+      let gradeStudents = studentsData.filter(st => st.grade === topGradeSelect && !st.isBanned);
+      gradeStudents.sort((a, b) => b.coins - a.coins);
+      let topFive = gradeStudents.slice(0, 5);
+
+      if(topFive.length === 0) {
+        topContainer.innerHTML = `<div class="col-span-5 text-center text-xs text-slate-400 py-4 font-bold">لا توجد بيانات مرتبة لهذا الصف بعد</div>`;
+      } else {
+        topFive.forEach((st, idx) => {
+          let badgeColor = idx === 0 ? "bg-amber-400 text-blue-950" : (idx === 1 ? "bg-slate-300 text-slate-900" : "bg-amber-700/40 text-amber-200");
+          let box = document.createElement('div');
+          box.className = "bg-slate-900/60 border border-amber-400/20 p-4 rounded-2xl text-center space-y-2 shadow";
+          box.innerHTML = `
+            <div class="w-8 h-8 rounded-full ${badgeColor} mx-auto flex items-center justify-center font-black text-xs shadow">
+              #${idx + 1}
+            </div>
+            <h5 class="text-xs font-black text-white truncate">${st.name}</h5>
+            <p class="text-[10px] text-amber-400 font-bold">${st.coins} Coins 🪙</p>
+          `;
+          topContainer.appendChild(box);
+        });
+      }
+    }
+
+    function loadAttendanceTable() {
+      const tbody = document.getElementById('attendanceTableBody');
+      const attGrade = document.getElementById('attFilterGrade').value;
+      const attGroup = document.getElementById('attFilterGroup').value;
+      tbody.innerHTML = "";
+
+      let filtered = studentsData.filter(st => {
+        let matchG = attGrade === "" || st.grade === attGrade;
+        let matchGr = attGroup === "" || st.group === attGroup;
+        return matchG && matchGr;
+      });
+
+      if(filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-slate-400 font-bold">لا توجد نتائج مطابقة في جدول المتابعة</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(st => {
+        let tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/30 transition border-b border-slate-800/40";
+        tr.innerHTML = `
+          <td class="p-3.5 font-bold text-white">${st.name} <span class="block text-[10px] text-slate-400 font-mono">${st.id}</span></td>
+          <td class="p-3.5">
+            <select onchange="updateStudentField('${st.id}', 'attendance', this.value)" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-amber-400">
+              <option value="حاضر" ${st.attendance==='حاضر'?'selected':''}>حاضر</option>
+              <option value="غائب" ${st.attendance==='غائب'?'selected':''}>غائب</option>
+              <option value="متأخر" ${st.attendance==='متأخر'?'selected':''}>متأخر</option>
+            </select>
+          </td>
+          <td class="p-3.5">
+            <select onchange="updateStudentField('${st.id}', 'homework', this.value)" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-amber-400">
+              <option value="ممتاز" ${st.homework==='ممتاز'?'selected':''}>ممتاز</option>
+              <option value="جيد جداً" ${st.homework==='جيد جداً'?'selected':''}>جيد جداً</option>
+              <option value="غير مكتمل" ${st.homework==='غير مكتمل'?'selected':''}>غير مكتمل</option>
+              <option value="لم يُسلّم" ${st.homework==='لم يُسلّم'?'selected':''}>لم يُسلّم</option>
+            </select>
+          </td>
+          <td class="p-3.5">
+            <input type="text" value="${st.dictation}" onchange="updateStudentField('${st.id}', 'dictation', this.value)" class="w-16 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-center text-amber-400">
+          </td>
+          <td class="p-3.5">
+            <input type="text" value="${st.paperExam}" onchange="updateStudentField('${st.id}', 'paperExam', this.value)" class="w-14 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-center text-amber-400">
+          </td>
+          <td class="p-3.5 font-mono text-emerald-400">${st.onlineExam}</td>
+          <td class="p-3.5">
+            <input type="text" value="${st.behavior}" onchange="updateStudentField('${st.id}', 'behavior', this.value)" class="w-20 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-[11px] text-amber-400">
+          </td>
+          <td class="p-3.5 text-center flex items-center justify-center gap-1.5">
+            <button onclick="addBonusCoins('${st.id}')" class="bg-amber-400/10 hover:bg-amber-400 hover:text-blue-950 text-amber-400 px-2.5 py-1 rounded-lg text-[10px] font-bold transition border border-amber-400/20" title="منح مكافأة Coins">
+              <i class="fa-solid fa-coins"></i> مكافأة
+            </button>
+            <button onclick="toggleBanStudent('${st.id}')" class="px-2.5 py-1 rounded-lg text-[10px] font-bold transition ${st.isBanned ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'}" title="حظر أو فك الحظر">
+              <i class="fa-solid fa-ban"></i> ${st.isBanned ? 'فك' : 'حظر'}
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateStudentField(id, field, val) {
+      let st = studentsData.find(s => s.id === id);
+      if(st) {
+        st[field] = val;
+        localStorage.setItem('el_husseiny_students', JSON.stringify(studentsData));
+      }
+    }
+
+    function addBonusCoins(id) {
+      let st = studentsData.find(s => s.id === id);
+      if(st) {
+        st.coins += 10;
+        saveAndRefresh();
+        alert(`تم إضافة 10 Coins للطالب ${st.name} بنجاح!`);
+      }
+    }
+
+    function toggleBanStudent(id) {
+      let st = studentsData.find(s => s.id === id);
+      if(st) {
+        st.isBanned = !st.isBanned;
+        saveAndRefresh();
+        alert(st.isBanned ? `تم حظر الطالب ${st.name} من الدخول للمنصة بنجاح.` : `تم فك الحظر عن الطالب ${st.name} بنجاح.`);
+      }
+    }
+
+    function deleteStudent(id) {
+      if(confirm("هل أنت متأكد من حذف هذا الطالب نهائياً؟")) {
+        studentsData = studentsData.filter(s => s.id !== id);
+        saveAndRefresh();
+        alert("تم حذف الطالب بنجاح.");
+      }
+    }
+
+    function editStudent(id) {
+      let st = studentsData.find(s => s.id === id);
+      if(st) {
+        let newName = prompt("تعديل اسم الطالب:", st.name);
+        let newPhone = prompt("تعديل هاتف الطالب:", st.phone);
+        if(newName !== null && newPhone !== null) {
+          st.name = newName;
+          st.phone = newPhone;
+          saveAndRefresh();
+          alert("تم تعديل بيانات الطالب بنجاح!");
+        }
+      }
+    }
+
+    function changeLesson() {
+      const grade = document.getElementById('lessonGradeTarget').value;
+      const group = document.getElementById('lessonGroupTarget').value;
+      const key = `lesson_${grade}_${group}`;
+      let saved = JSON.parse(localStorage.getItem(key));
+      if(saved) {
+        document.getElementById('lessonTitleInput').value = saved.title || "";
+        document.getElementById('homeworkPagesInput').value = saved.homework || "";
+        document.getElementById('videoUrlInput').value = saved.video || "";
+        document.getElementById('pdfUrlInput').value = saved.pdf || "";
+        document.getElementById('quizUrlInput').value = saved.quiz || "";
+      } else {
+        document.getElementById('lessonTitleInput').value = "";
+        document.getElementById('homeworkPagesInput').value = "";
+        document.getElementById('videoUrlInput').value = "";
+        document.getElementById('pdfUrlInput').value = "";
+        document.getElementById('quizUrlInput').value = "";
+      }
+    }
+
+    function saveLessonChanges() {
+      const grade = document.getElementById('lessonGradeTarget').value;
+      const group = document.getElementById('lessonGroupTarget').value;
+      const key = `lesson_${grade}_${group}`;
+      const lessonData = {
+        title: document.getElementById('lessonTitleInput').value,
+        homework: document.getElementById('homeworkPagesInput').value,
+        video: document.getElementById('videoUrlInput').value,
+        pdf: document.getElementById('pdfUrlInput').value,
+        quiz: document.getElementById('quizUrlInput').value
+      };
+      localStorage.setItem(key, JSON.stringify(lessonData));
+      
+      // حفظ تلقائي في قائمة إدارة الفيديوهات أيضاً
+      if(lessonData.video) {
+        let allVideos = JSON.parse(localStorage.getItem('el_husseiny_managed_videos')) || [];
+        allVideos.push({ id: Date.now(), grade: grade, group: group, title: lessonData.title || "حصة دراسية", link: lessonData.video });
+        localStorage.setItem('el_husseiny_managed_videos', JSON.stringify(allVideos));
+      }
+
+      alert("تم حفظ وتحديث بيانات الحصة والفيديوهات بنجاح!");
+      loadManagedVideos();
+    }
+
+    // دوظائف التحكم في الفيديوهات (استعراض، تعديل، حذف)
+    function loadManagedVideos() {
+      const container = document.getElementById('managedVideosContainer');
+      const selectedGrade = document.getElementById('videoFilterGrade').value;
+      container.innerHTML = "";
+
+      let allVideos = JSON.parse(localStorage.getItem('el_husseiny_managed_videos')) || [
+        { id: 1, grade: "الصف الثاني الإعدادي", group: "مجموعة السبت", title: "Unit 4 - Lesson 1 (الشرح الأساسي)", link: "https://youtube.com/embed/example" }
+      ];
+
+      let filtered = allVideos.filter(v => v.grade === selectedGrade);
+
+      if(filtered.length === 0) {
+        container.innerHTML = `<div class="col-span-2 text-center text-xs text-slate-400 py-6 font-bold bg-slate-900/40 rounded-2xl border border-slate-700">لا توجد فيديوهات مسجلة لهذا الصف حتى الآن</div>`;
+        return;
+      }
+
+      filtered.forEach(vid => {
+        let card = document.createElement('div');
+        card.className = "bg-slate-900/70 border border-slate-700 p-4 rounded-2xl flex flex-col justify-between gap-3 shadow";
+        card.innerHTML = `
+          <div class="space-y-1">
+            <div class="flex justify-between items-center">
+              <span class="text-[10px] text-amber-400 font-bold bg-amber-400/10 px-2 py-0.5 rounded">${vid.group || 'عام'}</span>
+              <span class="text-[10px] text-slate-400 font-mono">ID: ${vid.id}</span>
+            </div>
+            <h5 class="text-xs font-black text-white truncate">${vid.title}</h5>
+            <p class="text-[11px] text-blue-400 truncate font-mono" dir="ltr">${vid.link}</p>
+          </div>
+          <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+            <button onclick="editManagedVideo(${vid.id})" class="bg-slate-800 hover:bg-amber-400 hover:text-blue-950 text-slate-300 px-3 py-1.5 rounded-xl text-xs font-bold transition">
+              <i class="fa-solid fa-pen"></i> تعديل الرابط أو الاسم
+            </button>
+            <button onclick="deleteManagedVideo(${vid.id})" class="bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold transition">
+              <i class="fa-solid fa-trash"></i> حذف الفيديو
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function deleteManagedVideo(id) {
+      if(confirm("هل أنت متأكد من حذف هذا الفيديو من قائمة المنصة؟")) {
+        let allVideos = JSON.parse(localStorage.getItem('el_husseiny_managed_videos')) || [];
+        allVideos = allVideos.filter(v => v.id !== id);
+        localStorage.setItem('el_husseiny_managed_videos', JSON.stringify(allVideos));
+        loadManagedVideos();
+        alert("تم حذف الفيديو بنجاح.");
+      }
+    }
+
+    function editManagedVideo(id) {
+      let allVideos = JSON.parse(localStorage.getItem('el_husseiny_managed_videos')) || [];
+      let vid = allVideos.find(v => v.id === id);
+      if(vid) {
+        let newTitle = prompt("تعديل عنوان الفيديو:", vid.title);
+        let newLink = prompt("تعديل رابط الفيديو:", vid.link);
+        if(newTitle !== null && newLink !== null) {
+          vid.title = newTitle;
+          vid.link = newLink;
+          localStorage.setItem('el_husseiny_managed_videos', JSON.stringify(allVideos));
+          loadManagedVideos();
+          alert("تم تعديل بيانات الفيديو بنجاح!");
+        }
+      }
+    }
+
+    function saveAdvancedLesson(e) {
+      e.preventDefault();
+      const grade = document.getElementById('advTargetGrade').value;
+      const title = document.getElementById('advLessonTitle').value;
+      const link = document.getElementById('advLessonLink').value;
+      
+      const data = {
+        title: title,
+        link: link,
+        schedule: document.getElementById('advLiveSchedule').value
+      };
+      localStorage.setItem(`adv_lesson_${grade}`, JSON.stringify(data));
+
+      // إضافة للبثوث والفيديوهات المدارة تلقائياً
+      let allVideos = JSON.parse(localStorage.getItem('el_husseiny_managed_videos')) || [];
+      allVideos.push({ id: Date.now(), grade: grade, group: "بث مباشر / أونلاين", title: title, link: link });
+      localStorage.setItem('el_husseiny_managed_videos', JSON.stringify(allVideos));
+
+      loadManagedVideos();
+      alert("تم نشر الحصة أو البث المباشر وإضافتها لقائمة إدارة الفيديوهات بنجاح!");
+      e.target.reset();
+    }
+
+    function saveVisitorItem(e) {
+      e.preventDefault();
+      const type = document.getElementById('visitorSectionType').value;
+      const newItem = {
+        title: document.getElementById('visitorItemTitle').value,
+        link: document.getElementById('visitorItemLink').value,
+        date: new Date().toLocaleDateString('ar-EG')
+      };
+      let list = JSON.parse(localStorage.getItem(`visitor_${type}`)) || [];
+      list.push(newItem);
+      localStorage.setItem(`visitor_${type}`, JSON.stringify(list));
+      alert("تمت الإضافة بنجاح إلى صفحة الزوار!");
+      document.getElementById('visitorContentForm').reset();
+    }
+
+    function handleLessonFileUpload(e) {
+      if(e.target.files.length > 0) {
+        document.getElementById('pdfUrlInput').value = e.target.files[0].name;
+      }
+    }
+
+    function handleAdvFileUpload(e) {
+      if(e.target.files.length > 0) {
+        document.getElementById('advLessonLink').value = e.target.files[0].name;
+      }
+    }
+
+    function handleVisitorFileUpload(e) {
+      if(e.target.files.length > 0) {
+        document.getElementById('visitorItemLink').value = e.target.files[0].name;
+      }
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const icon = document.getElementById("themeIcon");
+      if (html.classList.contains("light")) {
+        html.classList.remove("light");
+        html.classList.add("dark");
+        icon.className = "fa-solid fa-sun text-base";
+        localStorage.setItem("theme", "dark");
+      } else {
+        html.classList.remove("dark");
+        html.classList.add("light");
+        icon.className = "fa-solid fa-moon text-base";
+        localStorage.setItem("theme", "light");
+      }
+    }
+
+    if(localStorage.getItem("theme") === "light") {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.classList.add("light");
+      document.getElementById("themeIcon").className = "fa-solid fa-moon text-base";
+    }
+
+    function generateSixCharId() {
+      const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      let result = "";
+      for (let i = 0; i < 3; i++) {
+        result += letters.charAt(Math.floor(Math.random() * letters.length));
+      }
+      for (let i = 0; i < 3; i++) {
+        result += Math.floor(Math.random() * 10);
+      }
+      return result;
+    }
+
+    function generateNewId() {
+      document.getElementById('inStudentId').value = generateSixCharId();
+    }
+
+    function initTeacherDashboard() {
+      generateNewId();
+      loadTeacherProfiles();
+      changeLesson();
+      loadAttendanceTable();
+      loadManagedVideos();
+    }
+  </script>
+</body>
+</html>

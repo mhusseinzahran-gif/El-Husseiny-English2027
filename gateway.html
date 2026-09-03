@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Husseiny English | Gateway</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                dark: '#0B132B',
+                card: '#1C2541',
+                accent: '#3A506B',
+                gold: '#F4D35E',
+                goldHover: '#E0BF3B'
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Cairo', sans-serif; } </style>
+</head>
+<body class="bg-slate-50 dark:bg-brand-dark text-slate-800 dark:text-slate-100 min-h-screen flex flex-col justify-between transition-colors duration-300 antialiased" onload="checkRememberedStudent()">
+
+  <!-- الترويسة العلوية -->
+  <header class="w-full max-w-6xl mx-auto px-6 py-5 flex flex-wrap justify-between items-center gap-4 z-50 relative">
+    
+    <!-- اليمين: اللوجو المصغر ورقم التواصل مع المستر -->
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="w-12 h-12 rounded-full bg-white dark:bg-brand-card border-2 border-amber-400 shadow-md overflow-hidden flex items-center justify-center hover:scale-105 transition">
+        <img src="mr-mohamed.png" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/50'">
+      </a>
+      <a href="https://wa.me/201225909390" target="_blank" class="flex items-center gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 px-3.5 py-2 rounded-2xl text-emerald-600 dark:text-emerald-400 text-xs font-black transition">
+        <i class="fa-brands fa-whatsapp text-lg text-emerald-500"></i>
+        <div class="flex flex-col text-right">
+          <span class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">تواصل مع المستر</span>
+          <span dir="ltr" class="text-xs font-black">01225909390</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- اليسار: قائمة الروابط الأربعة وزر تبديل الوضع -->
+    <div class="flex items-center gap-3">
+      <!-- القائمة المنسدلة (تفتح للداخل عبر right-0 أو left-0 حسب الاتجاه) -->
+      <div class="relative">
+        <button onclick="toggleMenuDropdown(event)" class="w-11 h-11 rounded-2xl bg-white dark:bg-brand-card shadow-lg border border-slate-250 dark:border-slate-700 flex items-center justify-center text-amber-500 hover:scale-105 transition-all" title="القائمة">
+          <i class="fa-solid fa-bars text-base"></i>
+        </button>
+        <!-- تم ضبط الموضع هنا ليفتح بشكل صحيح دون الخروج عن الشاشة -->
+        <div id="menuDropdown" class="hidden absolute left-0 mt-2 w-52 bg-white dark:bg-brand-card border border-slate-250 dark:border-slate-700 rounded-2xl shadow-2xl py-2 z-50">
+          <a href="https://www.youtube.com/channel/UCLtzzKqPRJsE2zoQB_cTw4A" target="_blank" rel="noopener noreferrer" class="w-full text-right px-4 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-amber-400 hover:text-blue-950 flex items-center gap-2.5 transition">
+            <i class="fa-brands fa-youtube text-red-500 text-sm"></i> قناة اليوتيوب
+          </a>
+          <a href="https://www.facebook.com/The.Hulk.in.English" target="_blank" rel="noopener noreferrer" class="w-full text-right px-4 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-amber-400 hover:text-blue-950 flex items-center gap-2.5 transition">
+            <i class="fa-brands fa-facebook text-blue-500 text-sm"></i> صفحة الفيسبوك
+          </a>
+          <a href="https://www.tiktok.com/@mohamedhussein7076" target="_blank" rel="noopener noreferrer" class="w-full text-right px-4 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-amber-400 hover:text-blue-950 flex items-center gap-2.5 transition">
+            <i class="fa-brands fa-tiktok text-slate-800 dark:text-slate-200 text-sm"></i> تيك توك
+          </a>
+          <div class="border-t border-slate-100 dark:border-slate-700 my-1"></div>
+          <button onclick="sharePlatform()" class="w-full text-right px-4 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-amber-400 hover:text-blue-950 flex items-center gap-2.5 transition">
+            <i class="fa-solid fa-share-nodes text-amber-500 text-sm"></i> شير للمنصة (Share)
+          </button>
+        </div>
+      </div>
+
+      <!-- زر تبديل الوضع -->
+      <button onclick="toggleTheme()" class="w-11 h-11 rounded-2xl bg-white dark:bg-brand-card shadow-lg border border-slate-250 dark:border-slate-700 flex items-center justify-center text-amber-500 hover:scale-105 transition-all">
+        <i id="themeIcon" class="fa-solid fa-sun text-base"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- المحتوى الرئيسي: الأقسام الثلاثة -->
+  <main class="max-w-6xl mx-auto px-6 py-8 w-full grid grid-cols-1 md:grid-cols-3 gap-6 my-auto">
+    
+    <!-- 1. طالب السنتر (Center Student) -->
+    <div class="bg-white dark:bg-brand-card border border-slate-250 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition-all">
+      <div class="space-y-4">
+        <div class="w-14 h-14 rounded-2xl bg-amber-400/10 text-amber-500 flex items-center justify-center text-2xl font-bold shadow-inner">
+          <i class="fa-solid fa-id-card"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-black text-slate-900 dark:text-white">طالب السنتر / Center Student</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">أدخل الكود الخاص بك للمتابعة</p>
+        </div>
+        
+        <div class="space-y-3 pt-2">
+          <input type="text" id="centerIdInput" placeholder="أدخل Student ID هنا..." class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-xs font-bold outline-none focus:border-amber-400 transition uppercase">
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="rememberStudent" class="rounded border-slate-700 accent-amber-400">
+            <label for="rememberStudent" class="text-[11px] text-slate-400 font-bold cursor-pointer">تذكر الكود الخاص بي (تذكرني)</label>
+          </div>
+          <button onclick="verifyCenterStudent()" class="w-full bg-amber-400 hover:bg-amber-500 text-blue-950 font-black py-3 rounded-xl shadow-md transition text-xs">
+            دخول / Login
+          </button>
+          <p id="centerErrorMsg" class="text-[11px] text-rose-500 font-bold text-center hidden"></p>
+        </div>
+      </div>
+      <div class="mt-6 text-[11px] text-slate-400 text-center font-bold">ملاحظة: 5 محاولات خاطئة تؤدي لحظر الحساب</div>
+    </div>
+
+    <!-- 2. أونلاين (Online Student) -->
+    <div class="bg-white dark:bg-brand-card border border-slate-250 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition-all">
+      <div class="space-y-4">
+        <div class="w-14 h-14 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center text-2xl font-bold shadow-inner">
+          <i class="fa-solid fa-laptop-code"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-black text-slate-900 dark:text-white">أونلاين / Online</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">إنشاء حساب جديد على المنصة</p>
+        </div>
+        
+        <div class="space-y-3 pt-1">
+          <input type="email" id="onlineEmail" placeholder="البريد الإلكتروني / Email" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-blue-500 transition">
+          <input type="password" id="onlinePassword" placeholder="كلمة المرور / Password" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-blue-500 transition">
+          <button onclick="saveOnlineAccount()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl shadow-md transition text-xs">
+            حفظ / Save
+          </button>
+          <p id="onlineSuccessMsg" class="text-[11px] text-emerald-500 font-bold text-center hidden">تم حفظ الحساب بنجاح!</p>
+        </div>
+      </div>
+      <div class="mt-6 text-[11px] text-slate-400 text-center font-bold">سجل بياناتك للوصول للدروس الكاملة</div>
+    </div>
+
+    <!-- 3. زائر (Visitor) -->
+    <div class="bg-white dark:bg-brand-card border border-slate-250 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition-all">
+      <div class="space-y-4">
+        <div class="w-14 h-14 rounded-2xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-2xl font-bold shadow-inner">
+          <i class="fa-solid fa-eye"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-black text-slate-900 dark:text-white">زائر / Visitor</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">تصفح المنصة والفيديوهات المتاحة</p>
+        </div>
+        
+        <div class="space-y-2 pt-6">
+          <button onclick="openVisitorPortal()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-3.5 rounded-xl shadow-md transition text-xs flex items-center justify-center gap-2">
+            <span>تصفح كزائر / Browse as Visitor</span>
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+        </div>
+      </div>
+      <div class="mt-6 text-[11px] text-slate-400 text-center font-bold">الفيديوهات ستكون مقفلة وتتطلب اشتراكاً</div>
+    </div>
+
+  </main>
+
+  <footer class="w-full text-center py-6 text-[11px] text-slate-400 dark:text-slate-500 font-bold">
+    El Husseiny English - Created by Mr. Mohamed Hussein © 2026
+  </footer>
+
+  <script>
+    // التحكم في القائمة المنسدلة مع دعم الإغلاق عند الضغط مرة أخرى
+    function toggleMenuDropdown(event) {
+      if (event) event.stopPropagation();
+      const drop = document.getElementById("menuDropdown");
+      drop.classList.toggle("hidden");
+    }
+
+    // إغلاق القائمة عند النقر خارجها
+    window.addEventListener("click", function(e) {
+      const drop = document.getElementById("menuDropdown");
+      if (drop && !drop.contains(e.target) && !e.target.closest('button')) {
+        drop.classList.add("hidden");
+      }
+    });
+
+    function sharePlatform() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'El Husseiny English Platform',
+          url: window.location.href
+        }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert("تم نسخ رابط المنصة بنجاح!");
+      }
+      const drop = document.getElementById("menuDropdown");
+      if (drop) drop.classList.add("hidden");
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const icon = document.getElementById("themeIcon");
+      if (html.classList.contains("light")) {
+        html.classList.remove("light");
+        html.classList.add("dark");
+        icon.className = "fa-solid fa-moon text-base";
+        localStorage.setItem("theme", "dark");
+      } else {
+        html.classList.remove("dark");
+        html.classList.add("light");
+        icon.className = "fa-solid fa-sun text-base";
+        localStorage.setItem("theme", "light");
+      }
+    }
+
+    if(localStorage.getItem("theme") === "dark") {
+      document.documentElement.classList.remove("light");
+      document.documentElement.classList.add("dark");
+      const icon = document.getElementById("themeIcon");
+      if(icon) icon.className = "fa-solid fa-moon text-base";
+    }
+
+    function checkRememberedStudent() {
+      let rememberedId = localStorage.getItem("remembered_student_id");
+      if (rememberedId) {
+        document.getElementById("centerIdInput").value = rememberedId;
+        document.getElementById("rememberStudent").checked = true;
+      }
+    }
+
+    function verifyCenterStudent() {
+      const idInput = document.getElementById("centerIdInput").value.trim().toUpperCase();
+      const errorMsg = document.getElementById("centerErrorMsg");
+      const rememberMe = document.getElementById("rememberStudent").checked;
+
+      if (idInput === "") {
+        errorMsg.classList.remove("hidden");
+        errorMsg.innerText = "الرجاء إدخال الـ ID الخاص بك";
+        return;
+      }
+
+      // قاعدة بيانات أساسية موحدة تضمن عمل الأكواد (مثل LRN776 وغيرها) على أي جهاز (هاتف أو لابتوب)
+      let defaultStudents = [
+        { id: "LRN776", name: "طالب مميز", grade: "الصف الأول الثانوي", group: "مجموعة السنتر", phone: "01225909390", parentPhone: "01225909390", coins: 150, isBanned: false },
+        { id: "OCR819", name: "طالب السنتر", grade: "الصف الخامس", group: "مجموعة المتميزين", phone: "01225909390", parentPhone: "01225909390", coins: 100, isBanned: false },
+        { id: "12345", name: "مستر محمد", grade: "المعلم", group: "الإدارة", phone: "01225909390", parentPhone: "01225909390", coins: 500, isBanned: false }
+      ];
+
+      let storedStudents = JSON.parse(localStorage.getItem('el_husseiny_students'));
+      let students = (storedStudents && storedStudents.length > 0) ? storedStudents : defaultStudents;
+      
+      // التأكد من دمج الأكواد الأساسية لضمان عدم ضياعها
+      defaultStudents.forEach(def => {
+        if (!students.some(s => s.id && s.id.toUpperCase() === def.id)) {
+          students.push(def);
+        }
+      });
+      localStorage.setItem('el_husseiny_students', JSON.stringify(students));
+
+      let bannedList = JSON.parse(localStorage.getItem('el_husseiny_banned')) || [];
+
+      if (bannedList.includes(idInput)) {
+        errorMsg.classList.remove("hidden");
+        errorMsg.innerText = "تم حظر الحساب لتجاوز محاولات الدخول الخاطئة. يرجى التواصل مع المستر لفك الحظر.";
+        return;
+      }
+
+      let foundStudent = students.find(s => s.id && s.id.trim().toUpperCase() === idInput);
+
+      if (foundStudent) {
+        if (foundStudent.isBanned) {
+          errorMsg.classList.remove("hidden");
+          errorMsg.innerText = "عفواً، هذا الحساب محظور حالياً من قبل المعلم.";
+          return;
+        }
+
+        localStorage.setItem("failedAttempts_" + idInput, 0);
+        if (rememberMe) {
+          localStorage.setItem("remembered_student_id", foundStudent.id);
+        } else {
+          localStorage.removeItem("remembered_student_id");
+        }
+        localStorage.setItem("current_active_window", JSON.stringify(foundStudent));
+        errorMsg.classList.add("hidden");
+        window.location.href = "lesson-view.html";
+      } else {
+        let attemptsKey = "failedAttempts_" + idInput;
+        let failedAttempts = localStorage.getItem(attemptsKey) ? parseInt(localStorage.getItem(attemptsKey)) : 0;
+        failedAttempts++;
+        localStorage.setItem(attemptsKey, failedAttempts);
+        
+        if (failedAttempts >= 5) {
+          bannedList.push(idInput);
+          localStorage.setItem('el_husseiny_banned', JSON.stringify(bannedList));
+          errorMsg.classList.remove("hidden");
+          errorMsg.innerText = "خطأ 5 مرات! تم حظر الحساب، يجب مراجعة المعلم لفك الحظر.";
+        } else {
+          errorMsg.classList.remove("hidden");
+          errorMsg.innerText = `الـ ID غير صحيح. محاولاتك الخاطئة: ${failedAttempts} من 5`;
+        }
+      }
+    }
+
+    function saveOnlineAccount() {
+      const email = document.getElementById("onlineEmail").value.trim();
+      const pass = document.getElementById("onlinePassword").value.trim();
+      const successMsg = document.getElementById("onlineSuccessMsg");
+
+      if(email && pass) {
+        localStorage.setItem("onlineEmail", email);
+        successMsg.classList.remove("hidden");
+        setTimeout(() => {
+          successMsg.classList.add("hidden");
+          window.location.href = "online-lessons.html";
+        }, 1500);
+      } else {
+        alert("الرجاء إدخال البريد الإلكتروني وكلمة المرور");
+      }
+    }
+
+    function openVisitorPortal() {
+      window.location.href = "visitor.html";
+    }
+  </script>
+</body>
+</html>

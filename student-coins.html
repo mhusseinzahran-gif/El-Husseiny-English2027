@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Husseiny English | Student Coins & Rewards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                dark: '#0B132B',
+                card: '#1C2541',
+                accent: '#3A506B',
+                gold: '#F4D35E',
+                goldHover: '#E0BF3B'
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Cairo', sans-serif; } </style>
+</head>
+<body class="bg-slate-50 dark:bg-brand-dark text-slate-800 dark:text-slate-100 min-h-screen flex flex-col justify-between transition-colors duration-300 antialiased">
+
+  <!-- الترويسة العلوية -->
+  <header class="w-full max-w-6xl mx-auto px-6 py-5 flex flex-wrap justify-between items-center gap-4 z-50">
+    <div class="flex items-center gap-3">
+      <!-- زر العودة لوحة الطالب -->
+      <a href="student-dashboard.html" class="flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-blue-950 px-4 py-2.5 rounded-2xl text-xs font-black shadow-md transition">
+        <i class="fa-solid fa-arrow-right"></i>
+        <span>العودة / Back</span>
+      </a>
+      <a href="gateway.html" class="w-12 h-12 rounded-full bg-white dark:bg-brand-card border-2 border-amber-400 shadow-md overflow-hidden flex items-center justify-center hover:scale-105 transition">
+        <img src="mr-mohamed.png" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/50'">
+      </a>
+    </div>
+
+    <!-- تواصل مع المستر وزر الثيم -->
+    <div class="flex items-center gap-3">
+      <a href="https://wa.me/201225909390" target="_blank" class="flex items-center gap-2 bg-emerald-500/10 hover:bg-emerald-500/25 border border-emerald-500/30 px-3.5 py-2 rounded-2xl text-emerald-600 dark:text-emerald-400 text-xs font-black transition">
+        <i class="fa-brands fa-whatsapp text-lg text-emerald-500"></i>
+        <span dir="ltr">01225909390</span>
+      </a>
+      <button onclick="toggleTheme()" class="w-11 h-11 rounded-2xl bg-white dark:bg-brand-card shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-amber-500 hover:scale-105 transition-all">
+        <i id="themeIcon" class="fa-solid fa-sun text-base"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- المحتوى الرئيسي للعملات -->
+  <main class="max-w-6xl mx-auto px-6 py-6 w-full space-y-6 my-auto">
+    
+    <!-- إجمالي رصيد العملات (Hero Card) -->
+    <div class="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300 text-blue-950 rounded-3xl p-8 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-5 text-center md:text-right">
+        <div class="w-20 h-20 rounded-3xl bg-white/30 backdrop-blur-md flex items-center justify-center text-4xl shadow-inner flex-shrink-0">
+          🪙
+        </div>
+        <div>
+          <h3 class="text-xs font-bold text-blue-900/80">إجمالي رصيد العملات والنجوم المكتسبة</h3>
+          <h1 class="text-3xl md:text-4xl font-black mt-1">6 Coins <span class="text-xs font-bold bg-white/20 px-3 py-1 rounded-xl">رصيد ممتاز</span></h1>
+        </div>
+      </div>
+      <div class="bg-white/90 dark:bg-brand-card dark:text-white px-6 py-4 rounded-2xl shadow-md text-center">
+        <span class="text-xs font-bold text-slate-500 dark:text-slate-400 block">مستوى المكافآت</span>
+        <span class="text-sm font-black text-amber-500">المستوى الذهبي 🌟</span>
+      </div>
+    </div>
+
+    <!-- شبكة مصادر العملات الستة -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      
+      <!-- 1. الواجب / Homework -->
+      <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition group">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition shadow-inner">
+            <i class="fa-solid fa-book-open-reader"></i>
+          </div>
+          <span class="bg-amber-400/10 text-amber-500 border border-amber-400/20 px-3 py-1 rounded-xl text-xs font-black">
+            +1 Coin 📚
+          </span>
+        </div>
+        <div>
+          <h3 class="text-base font-black text-slate-900 dark:text-white">الواجب</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Homework</p>
+        </div>
+        <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between">
+          <span>الواجبات المسلمة: 1</span>
+          <span class="text-emerald-500">تم التسليم</span>
+        </div>
+      </div>
+
+      <!-- 2. الحضور / Attendance -->
+      <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition group">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-14 h-14 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition shadow-inner">
+            <i class="fa-solid fa-user-check"></i>
+          </div>
+          <span class="bg-amber-400/10 text-amber-500 border border-amber-400/20 px-3 py-1 rounded-xl text-xs font-black">
+            +1 Coin ✅
+          </span>
+        </div>
+        <div>
+          <h3 class="text-base font-black text-slate-900 dark:text-white">الحضور</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Attendance</p>
+        </div>
+        <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between">
+          <span>التزام الحصص: منتظم</span>
+          <span class="text-emerald-500">حاضر</span>
+        </div>
+      </div>
+
+      <!-- 3. الاختبار الورقي / Paper Test -->
+      <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition group">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-14 h-14 rounded-2xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition shadow-inner">
+            <i class="fa-solid fa-file-pen"></i>
+          </div>
+          <span class="bg-amber-400/10 text-amber-500 border border-amber-400/20 px-3 py-1 rounded-xl text-xs font-black">
+            +1 Coin 📝
+          </span>
+        </div>
+        <div>
+          <h3 class="text-base font-black text-slate-900 dark:text-white">الاختبار الورقي</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Paper Test</p>
+        </div>
+        <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between">
+          <span>الاختبارات: 1</span>
+          <span class="text-amber-500 font-extrabold">ممتاز</span>
+        </div>
+      </div>
+
+      <!-- 4. الاختبار الالكتروني / Electronic Test -->
+      <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition group">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition shadow-inner">
+            <i class="fa-solid fa-laptop-code"></i>
+          </div>
+          <span class="bg-amber-400/10 text-amber-500 border border-amber-400/20 px-3 py-1 rounded-xl text-xs font-black">
+            +1 Coin 💻
+          </span>
+        </div>
+        <div>
+          <h3 class="text-base font-black text-slate-900 dark:text-white">الاختبار الالكتروني</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Electronic Test</p>
+        </div>
+        <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between">
+          <span>عدد الاختبارات: 1</span>
+          <span class="text-amber-500 font-extrabold">ممتاز</span>
+        </div>
+      </div>
+
+      <!-- 5. الإملاء / Dictation -->
+      <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition group">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-14 h-14 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition shadow-inner">
+            <i class="fa-solid fa-microphone-lines"></i>
+          </div>
+          <span class="bg-amber-400/10 text-amber-500 border border-amber-400/20 px-3 py-1 rounded-xl text-xs font-black">
+            +1 Coin 🎙️
+          </span>
+        </div>
+        <div>
+          <h3 class="text-base font-black text-slate-900 dark:text-white">الإملاء</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Dictation</p>
+        </div>
+        <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between">
+          <span>الجلسات: 1</span>
+          <span class="text-amber-500 font-extrabold">ممتاز</span>
+        </div>
+      </div>
+
+      <!-- 6. نشر لينك المنصة / Share Platform Link (بحد أقصى كوين واحد يومياً مع منع النشر لأعضاء المنصة) -->
+      <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition group">
+        <div class="flex justify-between items-start mb-4">
+          <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition shadow-inner">
+            <i class="fa-solid fa-share-nodes"></i>
+          </div>
+          <span class="bg-amber-400/10 text-amber-500 border border-amber-400/20 px-3 py-1 rounded-xl text-xs font-black">
+            +1 Coin 🌐 (حد أقصى يومي)
+          </span>
+        </div>
+        <div>
+          <h3 class="text-base font-black text-slate-900 dark:text-white">نشر لينك المنصة</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Share Platform Link (خارج المنصة فقط)</p>
+        </div>
+        <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between">
+          <span>المشاركات الصالحة: 1 كوين / يوم</span>
+          <span class="text-amber-500">يُمنع النشر لأعضاء المنصة</span>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- تذييل الصفحة -->
+  <footer class="w-full text-center py-6 text-[11px] text-slate-400 dark:text-slate-500 font-bold">
+    El Husseiny English - Created by Mr. Mohamed Hussein © 2026
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const icon = document.getElementById("themeIcon");
+      if (html.classList.contains("light")) {
+        html.classList.remove("light");
+        html.classList.add("dark");
+        icon.className = "fa-solid fa-moon text-base";
+        localStorage.setItem("theme", "dark");
+      } else {
+        html.classList.remove("dark");
+        html.classList.add("light");
+        icon.className = "fa-solid fa-sun text-base";
+        localStorage.setItem("theme", "light");
+      }
+    }
+
+    if(localStorage.getItem("theme") === "dark") {
+      document.documentElement.classList.remove("light");
+      document.documentElement.classList.add("dark");
+      document.getElementById("themeIcon").className = "fa-solid fa-moon text-base";
+    }
+  </script>
+</body>
+</html>

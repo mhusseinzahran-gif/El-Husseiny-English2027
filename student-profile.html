@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Husseiny English | Student Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                dark: '#0B132B',
+                card: '#1C2541',
+                accent: '#3A506B',
+                gold: '#F4D35E',
+                goldHover: '#E0BF3B'
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Cairo', sans-serif; } </style>
+</head>
+<body class="bg-slate-50 dark:bg-brand-dark text-slate-800 dark:text-slate-100 min-h-screen flex flex-col justify-between transition-colors duration-300 antialiased">
+
+  <!-- الترويسة العلوية -->
+  <header class="w-full max-w-6xl mx-auto px-6 py-5 flex flex-wrap justify-between items-center gap-4 z-50">
+    <div class="flex items-center gap-3">
+      <!-- زر العودة للرئيسية / لوحة الطالب -->
+      <a href="student-dashboard.html" class="flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-blue-950 px-4 py-2.5 rounded-2xl text-xs font-black shadow-md transition">
+        <i class="fa-solid fa-arrow-right"></i>
+        <span>العودة / Back</span>
+      </a>
+      <a href="gateway.html" class="w-12 h-12 rounded-full bg-white dark:bg-brand-card border-2 border-amber-400 shadow-md overflow-hidden flex items-center justify-center hover:scale-105 transition">
+        <img src="mr-mohamed.png" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/50'">
+      </a>
+    </div>
+
+    <!-- تواصل مع المستر وزر الثيم -->
+    <div class="flex items-center gap-3">
+      <a href="https://wa.me/201225909390" target="_blank" class="flex items-center gap-2 bg-emerald-500/10 hover:bg-emerald-500/25 border border-emerald-500/30 px-3.5 py-2 rounded-2xl text-emerald-600 dark:text-emerald-400 text-xs font-black transition">
+        <i class="fa-brands fa-whatsapp text-lg text-emerald-500"></i>
+        <span dir="ltr">01225909390</span>
+      </a>
+      <button onclick="toggleTheme()" class="w-11 h-11 rounded-2xl bg-white dark:bg-brand-card shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-amber-500 hover:scale-105 transition-all">
+        <i id="themeIcon" class="fa-solid fa-sun text-base"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- المحتوى الرئيسي للبروفايل -->
+  <main class="max-w-6xl mx-auto px-6 py-6 w-full space-y-6 my-auto">
+    
+    <!-- قسم صورة الطالب وتنبيه الخصوصية -->
+    <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col md:flex-row items-center gap-6">
+      
+      <!-- صورة الطالب مع خيارات التغيير والحذف -->
+      <div class="relative group flex-shrink-0">
+        <div class="w-32 h-32 rounded-full bg-slate-200 dark:bg-slate-800 border-4 border-amber-400 shadow-lg overflow-hidden flex items-center justify-center relative">
+          <img id="studentAvatar" src="https://via.placeholder.com/150" class="w-full h-full object-cover">
+          <input type="file" id="uploadAvatarInput" accept="image/*" class="hidden" onchange="changeAvatar(event)">
+        </div>
+        <!-- أزرار التحكم بالصورة -->
+        <div class="absolute bottom-0 right-0 flex gap-1">
+          <button onclick="document.getElementById('uploadAvatarInput').click()" title="تغيير الصورة" class="w-9 h-9 rounded-full bg-amber-400 hover:bg-amber-500 text-blue-950 shadow-md flex items-center justify-center transition">
+            <i class="fa-solid fa-camera text-xs"></i>
+          </button>
+          <button onclick="removeAvatar()" title="حذف الصورة" class="w-9 h-9 rounded-full bg-rose-500 hover:bg-rose-600 text-white shadow-md flex items-center justify-center transition">
+            <i class="fa-solid fa-trash text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- معلومات الطالب وتنبيه الخصوصية المعدل -->
+      <div class="space-y-3 text-center md:text-right flex-1">
+        <div>
+          <h2 class="text-xl font-black text-slate-900 dark:text-white">محمد أحمد إبراهيم / Mohamed Ahmed</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">طالب متميز بالمنصة - Student ID: #12345</p>
+        </div>
+        
+        <!-- التنبيه المحدث بحرف الواو -->
+        <div class="bg-amber-400/10 border border-amber-400/20 rounded-2xl p-3.5 text-amber-800 dark:text-amber-300 text-xs font-bold flex items-center gap-3">
+          <i class="fa-solid fa-shield-halved text-lg text-amber-500 flex-shrink-0"></i>
+          <span>هذا الملف والبيانات المرفقة خاصة بالطالب وولي أمره ولا يمكن لأي طالب آخر الاطلاع عليها.</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- شبكة البيانات (البيانات الدراسية + بيانات التواصل) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- 1. البيانات الدراسية -->
+      <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl space-y-4">
+        <div class="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center text-xl font-bold">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-900 dark:text-white">البيانات الدراسية</h3>
+            <p class="text-xs text-slate-400">Academic Data</p>
+          </div>
+        </div>
+
+        <div class="space-y-3 text-xs font-bold">
+          <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
+            <span class="text-slate-400">اسم الطالب / Student Name:</span>
+            <span class="text-slate-900 dark:text-white">محمد أحمد إبراهيم</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
+            <span class="text-slate-400">المرحلة الدراسية / Educational Stage:</span>
+            <span class="text-slate-900 dark:text-white">المرحلة الإعدادية / Preparatory</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
+            <span class="text-slate-400">الصف الدراسي / Grade:</span>
+            <span class="text-slate-900 dark:text-white">الصف الثاني الإعدادي</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
+            <span class="text-slate-400">الجروب / Group:</span>
+            <span class="text-amber-500">مجموعة السبت - الساعة 10:00 صباحاً</span>
+          </div>
+          <div class="flex justify-between py-2">
+            <span class="text-slate-400">تاريخ التسجيل / Registration Date:</span>
+            <span class="text-slate-900 dark:text-white" dir="ltr">2026/08/01</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. بيانات التواصل -->
+      <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl space-y-4">
+        <div class="flex items-center gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xl font-bold">
+            <i class="fa-solid fa-address-book"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-900 dark:text-white">بيانات التواصل</h3>
+            <p class="text-xs text-slate-400">Contact Information</p>
+          </div>
+        </div>
+
+        <div class="space-y-3 text-xs font-bold">
+          <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
+            <span class="text-slate-400">هاتف الطالب / Student Phone:</span>
+            <span class="text-slate-900 dark:text-white" dir="ltr">01112223344</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
+            <span class="text-slate-400">هاتف ولي الأمر / Parent Phone:</span>
+            <span class="text-slate-900 dark:text-white" dir="ltr">01009988776</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
+            <span class="text-slate-400">المحافظة / Governorate:</span>
+            <span class="text-slate-900 dark:text-white">الإسكندرية / Alexandria</span>
+          </div>
+          <div class="flex justify-between py-2">
+            <span class="text-slate-400">حالة الحساب / Account Status:</span>
+            <span class="bg-emerald-500/10 text-emerald-500 px-3 py-1 rounded-lg border border-emerald-500/20 font-black">مفعل / Active</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- تذييل الصفحة -->
+  <footer class="w-full text-center py-6 text-[11px] text-slate-400 dark:text-slate-500 font-bold">
+    El Husseiny English - Created by Mr. Mohamed Hussein © 2026
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const icon = document.getElementById("themeIcon");
+      if (html.classList.contains("light")) {
+        html.classList.remove("light");
+        html.classList.add("dark");
+        icon.className = "fa-solid fa-moon text-base";
+        localStorage.setItem("theme", "dark");
+      } else {
+        html.classList.remove("dark");
+        html.classList.add("light");
+        icon.className = "fa-solid fa-sun text-base";
+        localStorage.setItem("theme", "light");
+      }
+    }
+
+    if(localStorage.getItem("theme") === "dark") {
+      document.documentElement.classList.remove("light");
+      document.documentElement.classList.add("dark");
+      document.getElementById("themeIcon").className = "fa-solid fa-moon text-base";
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const savedImg = localStorage.getItem("studentAvatar");
+      if(savedImg) {
+        document.getElementById("studentAvatar").src = savedImg;
+      }
+    });
+
+    function changeAvatar(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const base64Img = e.target.result;
+          document.getElementById("studentAvatar").src = base64Img;
+          localStorage.setItem("studentAvatar", base64Img);
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function removeAvatar() {
+      localStorage.removeItem("studentAvatar");
+      document.getElementById("studentAvatar").src = "https://via.placeholder.com/150";
+      alert("تم حذف الصورة الشخصية بنجاح.");
+    }
+  </script>
+</body>
+</html>

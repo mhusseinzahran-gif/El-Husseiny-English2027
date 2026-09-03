@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Husseiny English | Online Classes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                dark: '#0B132B',
+                card: '#1C2541',
+                accent: '#3A506B',
+                gold: '#F4D35E',
+                goldHover: '#E0BF3B'
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style> body { font-family: 'Cairo', sans-serif; } </style>
+</head>
+<body class="bg-slate-50 dark:bg-brand-dark text-slate-800 dark:text-slate-100 min-h-screen flex flex-col justify-between transition-colors duration-300 antialiased">
+
+  <!-- الترويسة العلوية -->
+  <header class="w-full max-w-6xl mx-auto px-6 py-5 flex flex-wrap justify-between items-center gap-4 z-50">
+    <div class="flex items-center gap-3">
+      <!-- زر العودة للوحة الطالب -->
+      <a href="student-dashboard.html" class="flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-blue-950 px-4 py-2.5 rounded-2xl text-xs font-black shadow-md transition">
+        <i class="fa-solid fa-arrow-right"></i>
+        <span>العودة للوحة الطالب / Back</span>
+      </a>
+      <a href="gateway.html" class="w-12 h-12 rounded-full bg-white dark:bg-brand-card border-2 border-amber-400 shadow-md overflow-hidden flex items-center justify-center hover:scale-105 transition">
+        <img src="mr-mohamed.png" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/50'">
+      </a>
+    </div>
+
+    <!-- تواصل مع المستر وزر الثيم -->
+    <div class="flex items-center gap-3">
+      <a href="https://wa.me/201225909390" target="_blank" class="flex items-center gap-2 bg-emerald-500/10 hover:bg-emerald-500/25 border border-emerald-500/30 px-3.5 py-2 rounded-2xl text-emerald-600 dark:text-emerald-400 text-xs font-black transition">
+        <i class="fa-brands fa-whatsapp text-lg text-emerald-500"></i>
+        <span dir="ltr">01225909390</span>
+      </a>
+      <button onclick="toggleTheme()" class="w-11 h-11 rounded-2xl bg-white dark:bg-brand-card shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-amber-500 hover:scale-105 transition-all">
+        <i id="themeIcon" class="fa-solid fa-sun text-base"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- المحتوى الرئيسي -->
+  <main class="max-w-6xl mx-auto px-6 py-6 w-full space-y-6 my-auto">
+    
+    <!-- ترويسة القسم ومعلومات الاشتراك الشهري -->
+    <div class="bg-gradient-to-r from-blue-950 to-brand-card text-white rounded-3xl p-8 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-blue-900/50">
+      <div class="flex items-center gap-5 text-center md:text-right">
+        <div class="w-20 h-20 rounded-3xl bg-amber-400 text-blue-950 flex items-center justify-center text-3xl font-black shadow-inner flex-shrink-0">
+          🎓
+        </div>
+        <div>
+          <h3 class="text-xs font-bold text-amber-400">نظام الاشتراك الشهري للأونلاين</h3>
+          <h1 class="text-2xl md:text-3xl font-black mt-1">Monthly Online Subscription</h1>
+          <p class="text-xs text-slate-300 mt-1">احضر جميع حصص البث المباشر وتمتع بكافة مميزات المنصة</p>
+        </div>
+      </div>
+      
+      <!-- حالة الاشتراك وقيمته -->
+      <div class="bg-white/10 dark:bg-slate-900/60 px-6 py-4 rounded-2xl backdrop-blur-md border border-white/15 text-center flex flex-col items-center gap-1">
+        <span class="text-xs text-slate-300 font-bold">قيمة الاشتراك: <strong class="text-amber-400">200 جنيه / شهرياً</strong></span>
+        <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-black px-3 py-1 rounded-xl mt-1">
+          الحالة: مشترك ومفعل ✅
+        </span>
+      </div>
+    </div>
+
+    <!-- قسم الحصة المباشرة القادمة (Live Session Banner) -->
+    <div class="bg-white dark:bg-brand-card border-2 border-amber-400/50 rounded-3xl p-6 shadow-xl space-y-4 relative overflow-hidden">
+      <div class="absolute top-0 left-0 bg-amber-400 text-blue-950 px-4 py-1 text-xs font-black rounded-br-2xl">
+        بث مباشر قريباً 🔴 Live
+      </div>
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pt-2">
+        <div class="space-y-1">
+          <span class="text-xs font-bold text-amber-500">المحاضرة الحية القادمة (شاملة باقة الاشتراك)</span>
+          <h2 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white">مراجعة شاملة وقواعد التحدث لـ Unit 3</h2>
+          <p class="text-xs text-slate-400">موعدنا بث مباشر عبر منصة الزوم / يوتيوب للاجابة على كل استفسارات الطلاب</p>
+        </div>
+        <a href="#" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-6 py-3 rounded-2xl text-xs font-black shadow-lg transition flex items-center gap-2">
+          <i class="fa-solid fa-video"></i>
+          <span>دخول غرفة البث المباشر</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- قائمة الحصص والأرشيف الأونلاين -->
+    <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="text-base font-black text-slate-900 dark:text-white">أرشيف وحصص الأونلاين المتاحة / Lessons Archive</h3>
+        <span class="text-xs font-bold text-slate-400">إجمالي الحصص: 3 حصص</span>
+      </div>
+
+      <div class="space-y-4">
+        
+        <!-- الحصة رقم 1 -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 transition gap-4">
+          <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center font-black text-base">
+              01
+            </div>
+            <div>
+              <h4 class="text-sm font-black text-slate-900 dark:text-white">شرح قواعد Unit 1 والكلمات الأساسية</h4>
+              <p class="text-[11px] text-slate-400">مدة الفيديو: 50 دقيقة | متاح ضمن الاشتراك</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <span class="bg-emerald-500/10 text-emerald-500 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-emerald-500/20">تم الحضور ✅</span>
+            <a href="lesson-view.html" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-black transition">
+              مشاهدة الحصة
+            </a>
+          </div>
+        </div>
+
+        <!-- الحصة رقم 2 -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 transition gap-4">
+          <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center font-black text-base">
+              02
+            </div>
+            <div>
+              <h4 class="text-sm font-black text-slate-900 dark:text-white">مهارات الاستماع والقصة (The Reader)</h4>
+              <p class="text-[11px] text-slate-400">مدة الفيديو: 40 دقيقة | متاح ضمن الاشتراك</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <span class="bg-emerald-500/10 text-emerald-500 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-emerald-500/20">تم الحضور ✅</span>
+            <a href="lesson-view.html" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-black transition">
+              مشاهدة الحصة
+            </a>
+          </div>
+        </div>
+
+        <!-- الحصة رقم 3 -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 transition gap-4">
+          <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-amber-400/10 text-amber-500 flex items-center justify-center font-black text-base">
+              03
+            </div>
+            <div>
+              <h4 class="text-sm font-black text-slate-900 dark:text-white">شرح قواعد Unit 2 وحل مهارات القراءة والكتابة</h4>
+              <p class="text-[11px] text-slate-400">مدة الفيديو: 45 دقيقة | الحصة الحالية</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <span class="bg-amber-400/10 text-amber-500 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-amber-400/20">حاضر ومنتظم ⭐</span>
+            <a href="lesson-view.html" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-4 py-2 rounded-xl text-xs font-black transition shadow-sm">
+              دخول الحصة
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- تذييل الصفحة -->
+  <footer class="w-full text-center py-6 text-[11px] text-slate-400 dark:text-slate-500 font-bold">
+    El Husseiny English - Created by Mr. Mohamed Hussein © 2026
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const icon = document.getElementById("themeIcon");
+      if (html.classList.contains("light")) {
+        html.classList.remove("light");
+        html.classList.add("dark");
+        icon.className = "fa-solid fa-moon text-base";
+        localStorage.setItem("theme", "dark");
+      } else {
+        html.classList.remove("dark");
+        html.classList.add("light");
+        icon.className = "fa-solid fa-sun text-base";
+        localStorage.setItem("theme", "light");
+      }
+    }
+
+    if(localStorage.getItem("theme") === "dark") {
+      document.documentElement.classList.remove("light");
+      document.documentElement.classList.add("dark");
+      document.getElementById("themeIcon").className = "fa-solid fa-moon text-base";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Husseiny English | Visitor Section</title>
+    <style>
+        /* المتغيرات الافتراضية (الوضع الليلي Dark Mode) */
+        :root {
+            --bg-color: #0d1b2a;
+            --card-bg: #1b263b;
+            --accent-color: #3b82f6;
+            --text-color: #ffffff;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --action-bar-bg: #0f172a;
+        }
+
+        /* متغيرات الوضع الفاتح Light Mode */
+        [data-theme="light"] {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --accent-color: #2563eb;
+            --text-color: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #cbd5e1;
+            --action-bar-bg: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* الهيدر العلوي */
+        header {
+            background-color: var(--card-bg);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 15px;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .profile-logo-img {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #60a5fa;
+            box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+        }
+        .brand-text-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* جعل جميع العناصر في المنتصف تماماً */
+            text-align: center;
+            width: 100%;
+        }
+        .brand-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #60a5fa;
+            letter-spacing: 0.5px;
+        }
+        .brand-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-top: 2px;
+            width: 100%;
+            text-align: center; /* تمركز اسم المستر في المنتصف تحت اسم المنصة تماماً */
+        }
+        .right-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        /* تصميم زر الواتساب مطابق للصورة المرسلة تماماً */
+        .whatsapp-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: rgba(6, 95, 70, 0.25);
+            border: 1px solid #10b981;
+            padding: 8px 16px;
+            border-radius: 16px;
+            text-decoration: none;
+            transition: 0.3s;
+            gap: 12px;
+        }
+        .whatsapp-box:hover {
+            background-color: rgba(6, 95, 70, 0.4);
+            transform: scale(1.02);
+        }
+        .whatsapp-text-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .whatsapp-label {
+            font-size: 13px;
+            color: #34d399;
+            font-weight: 500;
+        }
+        .whatsapp-number {
+            font-size: 15px;
+            color: #34d399;
+            font-weight: bold;
+            direction: ltr;
+        }
+        .whatsapp-icon img {
+            width: 28px;
+            height: 28px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.3s;
+        }
+        .icon-btn:hover {
+            border-color: #60a5fa;
+            background-color: rgba(96, 165, 250, 0.1);
+        }
+
+        /* شريط الأزرار */
+        .action-bar {
+            background-color: var(--action-bar-bg);
+            padding: 10px 30px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s;
+        }
+        .btn {
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-back {
+            background-color: #475569;
+        }
+        .btn-back:hover {
+            background-color: #64748b;
+        }
+        .btn-signup {
+            background-color: var(--accent-color);
+        }
+        .btn-signup:hover {
+            opacity: 0.9;
+        }
+        .btn-share {
+            background-color: #10b981;
+        }
+        .btn-share:hover {
+            background-color: #059669;
+        }
+
+        /* محتوى الصفحة */
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .content-card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-card:hover {
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            border-color: #60a5fa;
+            transform: translateY(-3px);
+        }
+        .content-card h3 {
+            margin-top: 0;
+            color: #60a5fa;
+            font-size: 17px;
+        }
+        .content-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            flex-grow: 1;
+        }
+        .card-icon {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        .media-placeholder {
+            background: var(--bg-color);
+            height: 150px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            border: 1px dashed var(--border-color);
+            font-size: 13px;
+        }
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <!-- الهيدر الثابت -->
+    <header>
+        <div class="logo-container">
+            <img src="mr-mohamed.png" alt="Mr. Mohamed Hussein Logo" class="profile-logo-img">
+            <div class="brand-text-group">
+                <div class="brand-title">El Husseiny English</div>
+                <div class="brand-subtitle">Mr. Mohamed Hussein</div>
+            </div>
+        </div>
+        <div class="right-header">
+            <!-- زر الواتساب مطابق للصورة المرسلة تماماً -->
+            <a href="https://wa.me/201225909390" target="_blank" class="whatsapp-box">
+                <div class="whatsapp-text-group">
+                    <span class="whatsapp-label">تواصل مع المستر</span>
+                    <span class="whatsapp-number">01225909390</span>
+                </div>
+                <div class="whatsapp-icon">
+                    <img src="https://img.icons8.com/color/48/whatsapp.png" alt="WhatsApp">
+                </div>
+            </a>
+            <!-- زر الوضع الليلي -->
+            <button class="icon-btn" id="darkModeToggle" title="تغيير الوضع">🌙</button>
+        </div>
+    </header>
+
+    <!-- شريط الأزرار -->
+    <div class="action-bar">
+        <a href="gateway.html" class="btn btn-back" id="backBtn">العودة للبوابة / Back</a>
+        <a href="gateway.html" class="btn btn-signup" id="signupBtn">إنشاء حساب / Online Sign Up</a>
+        <button class="btn btn-share" onclick="sharePlatform()" id="shareBtn">نشر المنصة / Share</button>
+    </div>
+
+    <!-- محتوى صفحة الزائر -->
+    <div class="container">
+        <div class="content-grid">
+
+            <!-- قسم الفيديوهات التجريبية -->
+            <div class="content-card">
+                <div class="card-icon">▶️</div>
+                <h3 id="vidHeader">فيديوهات الشرح التجريبية / Preview Videos</h3>
+                <div class="media-placeholder">مكان عرض فيديو الشرح (Video Preview)</div>
+                <p>شاهد نماذج لأسلوب الشرح. الفيديوهات الكاملة تتطلب اشتراك أو تسجيل دخول.</p>
+            </div>
+
+            <!-- قسم ملفات الـ PDF والملازم -->
+            <div class="content-card">
+                <div class="card-icon">📄</div>
+                <h3 id="pdfHeader">الملفات والملازم الاسترشادية / Study Materials & PDFs</h3>
+                <div class="media-placeholder">معاينة ملف PDF / ملزمة الشرح</div>
+                <p>يمكنك الاطلاع على نماذج من المذكرات والتدريبات الخاصة بالمناهج.</p>
+            </div>
+
+             <!-- قسم الصور التوضيحية -->
+             <div class="content-card">
+                <div class="card-icon">🖼️</div>
+                <h3 id="photoHeader">المعرض والصور التوضيحية / Photo Gallery</h3>
+                <div class="media-placeholder">لقطات من المناهج والأنشطة</div>
+                <p>صور توضيحية لتبسيط هيكل الحصص والأنشطة المدرسية.</p>
+            </div>
+
+            <!-- قسم النصوص الإرشادية -->
+            <div class="content-card">
+                <div class="card-icon">📝</div>
+                <h3 id="noteHeader">توجيهات وإعلانات هامة / Instructions & Notes</h3>
+                <div class="media-placeholder">منطقة نصوص إرشادية</div>
+                <p>أهم المواعيد، الإعلانات الخاصة، وشروط الانضمام لمنصة El Husseiny English.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        El Husseiny English - Created by Mr. Mohamed Hussein &copy; 2026
+    </footer>
+
+    <script>
+        // تفعيل زر الوضع الليلي / الفاتح (Dark / Light Mode)
+        const toggleBtn = document.getElementById('darkModeToggle');
+        const bodyElement = document.body;
+
+        toggleBtn.addEventListener('click', () => {
+            const currentTheme = bodyElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                bodyElement.setAttribute('data-theme', 'light');
+                toggleBtn.innerText = '☀️';
+            } else {
+                bodyElement.setAttribute('data-theme', 'dark');
+                toggleBtn.innerText = '🌙';
+            }
+        });
+
+        // دالة نشر أو مشاركة رابط المنصة
+        function sharePlatform() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'El Husseiny English Platform',
+                    text: 'انضم الآن إلى منصة مستر محمد حسين لتدريس اللغة الإنجليزية للمراحل المختلفة',
+                    url: window.location.href,
+                }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('تم نسخ رابط المنصة بنجاح! / Link copied successfully!');
+            }
+        }
+    </script>
+</body>
+</html>
