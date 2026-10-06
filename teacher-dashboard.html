@@ -163,7 +163,7 @@
         </div>
         <div class="space-y-1">
           <label class="text-xs font-bold text-slate-700 dark:text-slate-300">الصف الدراسي</label>
-          <select id="inGrade" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-amber-400 focus:outline-none">
+          <select id="inGrade" onchange="updateGroupDropdownForGrade()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-amber-400 focus:outline-none">
             <optgroup label="المرحلة الابتدائية">
               <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
               <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
@@ -187,8 +187,7 @@
         <div class="space-y-1">
           <label class="text-xs font-bold text-slate-700 dark:text-slate-300">الجروب</label>
           <select id="inGroup" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-amber-500 focus:outline-none">
-            <option value="مجموعة السبت">مجموعة السبت</option>
-            <option value="مجموعة الأحد">مجموعة الأحد</option>
+            <!-- Populated dynamically -->
           </select>
         </div>
         <div class="space-y-1">
@@ -213,7 +212,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label class="text-[10px] text-slate-400 font-bold block mb-1">تصفية حسب الصف:</label>
-            <select id="filterGrade" onchange="loadTeacherProfiles()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-amber-400 focus:outline-none">
+            <select id="filterGrade" onchange="onFilterGradeChanged()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-amber-400 focus:outline-none">
               <option value="">جميع الصفوف الدراسية</option>
               <optgroup label="المرحلة الابتدائية">
                 <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
@@ -239,8 +238,6 @@
             <label class="text-[10px] text-slate-400 font-bold block mb-1">تصفية حسب الجروب:</label>
             <select id="filterGroup" onchange="loadTeacherProfiles()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-amber-400 focus:outline-none">
               <option value="">جميع المجموعات والجروبات</option>
-              <option value="مجموعة السبت">مجموعة السبت</option>
-              <option value="مجموعة الأحد">مجموعة الأحد</option>
             </select>
           </div>
           <div>
@@ -269,7 +266,7 @@
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <select id="attFilterGrade" onchange="loadAttendanceTable()" class="bg-slate-50 dark:bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold text-amber-400 focus:outline-none">
+          <select id="attFilterGrade" onchange="onAttGradeChanged()" class="bg-slate-50 dark:bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold text-amber-400 focus:outline-none">
             <option value="">جميع الصفوف</option>
             <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
             <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
@@ -286,8 +283,6 @@
           </select>
           <select id="attFilterGroup" onchange="loadAttendanceTable()" class="bg-slate-50 dark:bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold text-amber-400 focus:outline-none">
             <option value="">جميع المجموعات</option>
-            <option value="مجموعة السبت">مجموعة السبت</option>
-            <option value="مجموعة الأحد">مجموعة الأحد</option>
           </select>
         </div>
       </div>
@@ -324,7 +319,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
         <div>
           <label class="text-xs font-bold text-slate-400 block mb-1">اختر الصف الدراسي للحصة:</label>
-          <select id="lessonGradeTarget" onchange="changeLesson()" class="w-full bg-white dark:bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-amber-400 focus:outline-none">
+          <select id="lessonGradeTarget" onchange="onLessonGradeChanged()" class="w-full bg-white dark:bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-amber-400 focus:outline-none">
             <optgroup label="المرحلة الابتدائية">
               <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
               <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
@@ -348,9 +343,7 @@
         <div>
           <label class="text-xs font-bold text-slate-400 block mb-1">اختر المجموعة (الجروب):</label>
           <select id="lessonGroupTarget" onchange="changeLesson()" class="w-full bg-white dark:bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-amber-400 focus:outline-none">
-            <option value="مجموعة السبت">مجموعة السبت</option>
-            <option value="مجموعة الأحد">مجموعة الأحد</option>
-            <option value="جميع المجموعات">جميع المجموعات (عام)</option>
+            <!-- Populated dynamically based on grade -->
           </select>
         </div>
       </div>
@@ -620,7 +613,6 @@
         document.getElementById('cloudStatus').innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> سحابي متصل (${userId.substring(0, 5)}...)`;
 
         // Real-time sync for students
-        const studentsCol = collection(db, 'artifacts', appId, 'public', 'data', 'students');
         onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'students'), (snapshot) => {
           if (!snapshot.empty) {
             let loaded = [];
@@ -658,7 +650,6 @@
 
       } catch (e) {
         console.log("Firebase Init fallback to localStorage:", e);
-        // Fallback to localStorage if offline or token not present
         let localSt = localStorage.getItem('el_husseiny_students');
         if(localSt) window.globalStudentsData = JSON.parse(localSt);
         let localGr = localStorage.getItem('el_husseiny_groups');
@@ -751,42 +742,105 @@
     }
 
     function populateGroupSelects() {
-      const inGroup = document.getElementById('inGroup');
-      const filterGroup = document.getElementById('filterGroup');
-      const attFilterGroup = document.getElementById('attFilterGroup');
-      const lessonGroupTarget = document.getElementById('lessonGroupTarget');
+      // 1. Student Registration Form Group Select (filtered by selected grade)
+      updateGroupDropdownForGrade();
 
-      if(inGroup) {
-        inGroup.innerHTML = "";
-        window.globalGroupsData.forEach(g => {
+      // 2. Filter Group Select (filtered by filterGrade)
+      onFilterGradeChanged();
+
+      // 3. Attendance Table Filter Group Select (filtered by attFilterGrade)
+      onAttGradeChanged();
+
+      // 4. Lesson Target Group Select (filtered by lessonGradeTarget)
+      onLessonGradeChanged();
+    }
+
+    function updateGroupDropdownForGrade() {
+      const inGrade = document.getElementById('inGrade');
+      const inGroup = document.getElementById('inGroup');
+      if(!inGrade || !inGroup) return;
+      const selectedGrade = inGrade.value;
+      const currentVal = inGroup.value;
+
+      inGroup.innerHTML = "";
+      const matchedGroups = window.globalGroupsData.filter(g => g.grade === selectedGrade);
+      
+      if(matchedGroups.length === 0) {
+        let opt = document.createElement('option');
+        opt.value = "";
+        opt.innerText = "لا توجد مجموعات لهذا الصف (أنشئ مجموعة بالأعلى)";
+        inGroup.appendChild(opt);
+      } else {
+        matchedGroups.forEach(g => {
           let opt = document.createElement('option');
           opt.value = g.name;
-          opt.innerText = g.name + " (" + g.grade + ")";
+          opt.innerText = g.name;
           inGroup.appendChild(opt);
         });
+        if(matchedGroups.some(g => g.name === currentVal)) {
+          inGroup.value = currentVal;
+        }
       }
-      if(filterGroup) {
-        let curr = filterGroup.value;
-        filterGroup.innerHTML = `<option value="">جميع المجموعات والجروبات</option>`;
-        window.globalGroupsData.forEach(g => {
-          let opt = document.createElement('option');
-          opt.value = g.name;
-          opt.innerText = g.name;
-          filterGroup.appendChild(opt);
-        });
+    }
+
+    function onFilterGradeChanged() {
+      const filterGrade = document.getElementById('filterGrade').value;
+      const filterGroup = document.getElementById('filterGroup');
+      if(!filterGroup) return;
+      const curr = filterGroup.value;
+
+      filterGroup.innerHTML = `<option value="">جميع المجموعات والجروبات</option>`;
+      const matched = filterGrade === "" ? window.globalGroupsData : window.globalGroupsData.filter(g => g.grade === filterGrade);
+      matched.forEach(g => {
+        let opt = document.createElement('option');
+        opt.value = g.name;
+        opt.innerText = g.name;
+        filterGroup.appendChild(opt);
+      });
+      if(matched.some(g => g.name === curr)) {
         filterGroup.value = curr;
       }
-      if(attFilterGroup) {
-        let curr = attFilterGroup.value;
-        attFilterGroup.innerHTML = `<option value="">جميع المجموعات</option>`;
-        window.globalGroupsData.forEach(g => {
-          let opt = document.createElement('option');
-          opt.value = g.name;
-          opt.innerText = g.name;
-          attFilterGroup.appendChild(opt);
-        });
-        attFilterGroup.value = curr;
+      loadTeacherProfiles();
+    }
+
+    function onAttGradeChanged() {
+      const attGrade = document.getElementById('attFilterGrade').value;
+      const attGroup = document.getElementById('attFilterGroup');
+      if(!attGroup) return;
+      const curr = attGroup.value;
+
+      attGroup.innerHTML = `<option value="">جميع المجموعات</option>`;
+      const matched = attGrade === "" ? window.globalGroupsData : window.globalGroupsData.filter(g => g.grade === attGrade);
+      matched.forEach(g => {
+        let opt = document.createElement('option');
+        opt.value = g.name;
+        opt.innerText = g.name;
+        attGroup.appendChild(opt);
+      });
+      if(matched.some(g => g.name === curr)) {
+        attGroup.value = curr;
       }
+      loadAttendanceTable();
+    }
+
+    function onLessonGradeChanged() {
+      const lessonGrade = document.getElementById('lessonGradeTarget').value;
+      const lessonGroupTarget = document.getElementById('lessonGroupTarget');
+      if(!lessonGroupTarget) return;
+      const curr = lessonGroupTarget.value;
+
+      lessonGroupTarget.innerHTML = `<option value="جميع المجموعات">جميع المجموعات (عام)</option>`;
+      const matched = window.globalGroupsData.filter(g => g.grade === lessonGrade);
+      matched.forEach(g => {
+        let opt = document.createElement('option');
+        opt.value = g.name;
+        opt.innerText = g.name;
+        lessonGroupTarget.appendChild(opt);
+      });
+      if(curr === "جميع المجموعات" || matched.some(g => g.name === curr)) {
+        lessonGroupTarget.value = curr;
+      }
+      changeLesson();
     }
 
     function createNewGroup() {
@@ -802,6 +856,7 @@
       }
       window.globalGroupsData.push({ name, grade });
       window.cloudSaveGroup({ name, grade });
+      localStorage.setItem('el_husseiny_groups', JSON.stringify(window.globalGroupsData));
       document.getElementById('newGroupName').value = "";
       renderGroupsList();
       showModal("تم بنجاح", `تم إنشاء وتفعيل مجموعة "${name}" بنجاح على المنصة سحابياً!`, "fa-solid fa-circle-check text-emerald-500");
@@ -812,6 +867,7 @@
       showModal("حذف مجموعة", `هل أنت متأكد من حذف مجموعة "${grp.name}"؟`, "fa-solid fa-trash text-rose-500");
       document.getElementById('modalOkBtn').onclick = function() {
         window.globalGroupsData.splice(idx, 1);
+        localStorage.setItem('el_husseiny_groups', JSON.stringify(window.globalGroupsData));
         renderGroupsList();
         closeModal();
       };
@@ -841,6 +897,7 @@
       saveAndRefresh();
       this.reset();
       generateNewId();
+      updateGroupDropdownForGrade();
       showModal("تم بنجاح", "تم تسجيل بيانات الطالب وتفعيل كوده في المنصة سحابياً بنجاح!", "fa-solid fa-circle-check text-emerald-500");
     });
 
@@ -1030,7 +1087,6 @@
       showModal("تأكيد الحذف", "هل أنت متأكد من حذف هذا الطالب نهائياً من المنصة؟", "fa-solid fa-triangle-exclamation text-rose-500");
       document.getElementById('modalOkBtn').onclick = function() {
         window.globalStudentsData = window.globalStudentsData.filter(s => s.id !== id);
-        // Note: cloud deletion can be handled or overwrite
         saveAndRefresh();
         closeModal();
         showModal("تم الحذف", "تم حذف الطالب بنجاح.", "fa-solid fa-circle-check text-emerald-500");
@@ -1123,11 +1179,41 @@
     }
 
     function changeLesson() {
-      // Stub for updating lesson edit fields when target changes
+      // Handles dynamic updates when specific lesson group target is selected
+      const grade = document.getElementById('lessonGradeTarget').value;
+      const group = document.getElementById('lessonGroupTarget').value;
+      const key = `${grade}_${group}`;
+      if(window.globalLessonsData && window.globalLessonsData[key]) {
+        let lesson = window.globalLessonsData[key];
+        document.getElementById('lessonTitleInput').value = lesson.title || "";
+        document.getElementById('homeworkPagesInput').value = lesson.homework || "";
+        document.getElementById('videoUrlInput').value = lesson.video || "";
+        document.getElementById('pdfUrlInput').value = lesson.pdf || "";
+        document.getElementById('quizUrlInput').value = lesson.quiz || "";
+      } else {
+        document.getElementById('lessonTitleInput').value = "";
+        document.getElementById('homeworkPagesInput').value = "";
+        document.getElementById('videoUrlInput').value = "";
+        document.getElementById('pdfUrlInput').value = "";
+        document.getElementById('quizUrlInput').value = "";
+      }
     }
 
     function saveLessonChanges() {
-      showModal("تم الحفظ", "تم حفظ وتحديث بيانات الحصة والمحتوى للمجموعة بنجاح سحابياً!", "fa-solid fa-circle-check text-emerald-500");
+      const grade = document.getElementById('lessonGradeTarget').value;
+      const group = document.getElementById('lessonGroupTarget').value;
+      const key = `${grade}_${group}`;
+      
+      if(!window.globalLessonsData) window.globalLessonsData = {};
+      window.globalLessonsData[key] = {
+        title: document.getElementById('lessonTitleInput').value,
+        homework: document.getElementById('homeworkPagesInput').value,
+        video: document.getElementById('videoUrlInput').value,
+        pdf: document.getElementById('pdfUrlInput').value,
+        quiz: document.getElementById('quizUrlInput').value
+      };
+
+      showModal("تم الحفظ", `تم حفظ وتحديث بيانات الحصة والمحتوى للصف (${grade}) والجروب (${group}) بنجاح سحابياً!`, "fa-solid fa-circle-check text-emerald-500");
     }
 
     function saveAdvancedLesson(e) {
