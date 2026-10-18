@@ -351,7 +351,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc as _setDoc, getDoc as _getDoc, getDocs, deleteDoc as _deleteDoc, updateDoc as _updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // إعدادات افتراضية آمنة في حال عدم توفر متغيرات النظام بالخارج
     const defaultFirebaseConfig = {
@@ -366,6 +366,14 @@
         firebaseConfig = JSON.parse(__firebase_config);
       }
     } catch(e) {}
+
+    // السحابة تعمل فقط عند وجود إعدادات Firebase حقيقية؛ غير ذلك يكون التخزين المحلي هو المصدر الأساسي للبيانات
+    const cloudEnabled = (typeof __firebase_config !== 'undefined' && !!__firebase_config);
+    const withTimeout = (p, ms = 4000) => Promise.race([p, new Promise(res => setTimeout(res, ms))]);
+    const setDoc = (...a) => cloudEnabled ? withTimeout(_setDoc(...a)) : Promise.resolve();
+    const deleteDoc = (...a) => cloudEnabled ? withTimeout(_deleteDoc(...a)) : Promise.resolve();
+    const updateDoc = (...a) => cloudEnabled ? withTimeout(_updateDoc(...a)) : Promise.resolve();
+    const getDoc = (...a) => cloudEnabled ? _getDoc(...a) : Promise.resolve({ exists: () => false });
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -384,12 +392,14 @@
 
     // نظام تخزين محلي احتياطي لضمان العمل الفوري خارج المنصة
     function getLocalData(key, defaultVal) {
-      const data = localStorage.getItem(appId + "_" + key);
-      return data ? JSON.parse(data) : defaultVal;
+      try {
+        const data = localStorage.getItem(appId + "_" + key);
+        return data ? JSON.parse(data) : defaultVal;
+      } catch (e) { return defaultVal; }
     }
 
     function setLocalData(key, val) {
-      localStorage.setItem(appId + "_" + key, JSON.stringify(val));
+      try { localStorage.setItem(appId + "_" + key, JSON.stringify(val)); } catch (e) {}
     }
 
     async function initAuthAndData() {
@@ -424,6 +434,7 @@
     }
 
     function startRealtimeListeners() {
+      if (!cloudEnabled) return; // بدون سحابة حقيقية لا نستبدل البيانات المحلية
       const groupsCol = collection(db, 'artifacts', appId, 'public', 'data', 'groups_v2');
       onSnapshot(groupsCol, (snapshot) => {
         if (!snapshot.empty) {
@@ -792,9 +803,3 @@
   </script>
 </body>
 </html>
-```
-eof
-
-### نصائح تشغيل إضافية للمتصفح الخارجي:
-* لتجربة الملف على جهازك محلياً بشكل صحيح، يُفضل استخدام خادم محلي مثل **Live Server** في برنامج VS Code أو فتح متصفح يدعم الوحدات (Modules).
-* تم دمج نظام **LocalStorage** في النسخة أعلاه لكي تحفظ أي تعديلات تجريها فوراً على متصفحك المحلي دون أن تختفي أبداً حتى لو لم يكن لديك اتصال بإنترنت وقت الاختبار.
