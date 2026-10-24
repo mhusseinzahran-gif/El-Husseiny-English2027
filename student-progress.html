@@ -87,36 +87,36 @@
           <div>
             <div class="flex justify-between text-xs font-bold mb-1">
               <span class="text-slate-400">الحصص المكتملة</span>
-              <span class="text-blue-500">18 / 40 حصة</span>
+              <span id="prLessons" class="text-blue-500">0 / 0 حصة</span>
             </div>
             <div class="w-full bg-slate-100 dark:bg-slate-900 h-3 rounded-full overflow-hidden">
-              <div class="bg-blue-500 h-full rounded-full transition-all duration-1000" style="width: 45%;"></div>
+              <div id="prLessonsBar" class="bg-blue-500 h-full rounded-full transition-all duration-1000" style="width: 0%;"></div>
             </div>
           </div>
 
           <div>
             <div class="flex justify-between text-xs font-bold mb-1">
               <span class="text-slate-400">الاختبارات التفاعلية</span>
-              <span class="text-emerald-500">85%</span>
+              <span id="prElec" class="text-emerald-500">0%</span>
             </div>
             <div class="w-full bg-slate-100 dark:bg-slate-900 h-3 rounded-full overflow-hidden">
-              <div class="bg-emerald-500 h-full rounded-full transition-all duration-1000" style="width: 85%;"></div>
+              <div id="prElecBar" class="bg-emerald-500 h-full rounded-full transition-all duration-1000" style="width: 0%;"></div>
             </div>
           </div>
 
           <div>
             <div class="flex justify-between text-xs font-bold mb-1">
               <span class="text-slate-400">حل الواجبات</span>
-              <span class="text-amber-500">90%</span>
+              <span id="prHw" class="text-amber-500">0%</span>
             </div>
             <div class="w-full bg-slate-100 dark:bg-slate-900 h-3 rounded-full overflow-hidden">
-              <div class="bg-amber-500 h-full rounded-full transition-all duration-1000" style="width: 90%;"></div>
+              <div id="prHwBar" class="bg-amber-500 h-full rounded-full transition-all duration-1000" style="width: 0%;"></div>
             </div>
           </div>
         </div>
 
         <div class="bg-slate-50 dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 text-center text-xs font-bold text-slate-500">
-          أنت تتقدم بشكل أسرع من 80% من زملائك! 🚀
+          <span id="prMsg">جاري حساب مستواك...</span>
         </div>
       </div>
 
@@ -138,23 +138,23 @@
         <!-- شكل توضيحي للرسم البياني بأعمدة متناسقة -->
         <div class="h-56 flex items-end justify-between gap-2 sm:gap-4 pt-6 px-2 border-b border-slate-100 dark:border-slate-800">
           <div class="w-full flex flex-col items-center gap-2 h-full justify-end">
-            <span class="text-[10px] font-bold text-slate-400">60%</span>
-            <div class="w-full bg-amber-400/20 hover:bg-amber-400 rounded-t-xl transition-all h-[60%]"></div>
+            <span id="wk1p" class="text-[10px] font-bold text-slate-400">0%</span>
+            <div id="wk1b" class="w-full bg-amber-400/20 hover:bg-amber-400 rounded-t-xl transition-all" style="height:0%"></div>
             <span class="text-[10px] font-black text-slate-500">الأسبوع 1</span>
           </div>
           <div class="w-full flex flex-col items-center gap-2 h-full justify-end">
-            <span class="text-[10px] font-bold text-slate-400">75%</span>
-            <div class="w-full bg-amber-400/30 hover:bg-amber-400 rounded-t-xl transition-all h-[75%]"></div>
+            <span id="wk2p" class="text-[10px] font-bold text-slate-400">0%</span>
+            <div id="wk2b" class="w-full bg-amber-400/30 hover:bg-amber-400 rounded-t-xl transition-all" style="height:0%"></div>
             <span class="text-[10px] font-black text-slate-500">الأسبوع 2</span>
           </div>
           <div class="w-full flex flex-col items-center gap-2 h-full justify-end">
-            <span class="text-[10px] font-bold text-slate-400">80%</span>
-            <div class="w-full bg-amber-400/50 hover:bg-amber-400 rounded-t-xl transition-all h-[80%]"></div>
+            <span id="wk3p" class="text-[10px] font-bold text-slate-400">0%</span>
+            <div id="wk3b" class="w-full bg-amber-400/50 hover:bg-amber-400 rounded-t-xl transition-all" style="height:0%"></div>
             <span class="text-[10px] font-black text-slate-500">الأسبوع 3</span>
           </div>
           <div class="w-full flex flex-col items-center gap-2 h-full justify-end">
-            <span class="text-[10px] font-bold text-amber-500">95%</span>
-            <div class="w-full bg-amber-400 hover:bg-amber-500 rounded-t-xl transition-all h-[95%] shadow-md"></div>
+            <span id="wk4p" class="text-[10px] font-bold text-amber-500">0%</span>
+            <div id="wk4b" class="w-full bg-amber-400 hover:bg-amber-500 rounded-t-xl transition-all shadow-md" style="height:0%"></div>
             <span class="text-[10px] font-black text-slate-900 dark:text-white">الأسبوع 4 (الآن)</span>
           </div>
         </div>
@@ -214,6 +214,41 @@
         quoteElement.style.opacity = 1;
       }, 300);
     }, 5000);
+  </script>
+  <script type="module">
+    import { requireStudent, myLessons, myRecords, baseCoins } from "./platform.js";
+    const set = (id, t) => { document.getElementById(id).textContent = t; };
+    const pct = (a, b) => (b ? Math.min(100, Math.round((a / b) * 100)) : 0);
+    (async () => {
+      const st = await requireStudent();
+      let lessons = [], recs = [];
+      try { [lessons, recs] = await Promise.all([myLessons(st, "center"), myRecords(st)]); } catch (e) {}
+      const total = lessons.length;
+      const att = recs.filter((r) => r.attendance === "حاضر").length;
+      const elec = recs.filter((r) => r.electronic === "تم").length;
+      const hw = recs.filter((r) => r.homework && r.homework !== "لم يسلم").length;
+      set("prLessons", `${att} / ${total} حصة`);
+      document.getElementById("prLessonsBar").style.width = pct(att, total) + "%";
+      set("prElec", pct(elec, total) + "%"); document.getElementById("prElecBar").style.width = pct(elec, total) + "%";
+      set("prHw", pct(hw, total) + "%"); document.getElementById("prHwBar").style.width = pct(hw, total) + "%";
+      const overall = Math.round((pct(att, total) + pct(elec, total) + pct(hw, total)) / 3);
+      set("prMsg", total ? `نسبة التزامك الإجمالية: ${overall}% 🚀` : "ستظهر نسبك هنا بعد تسجيل أول حصة 🚀");
+
+      // أداء آخر 4 أسابيع: متوسط ما حققه من الحد الأقصى للنقاط الأساسية في كل حصة
+      const now = Date.now(), week = 7 * 24 * 3600 * 1000;
+      const buckets = [[], [], [], []];
+      recs.forEach((r) => {
+        const t = r.updatedAt?.toMillis ? r.updatedAt.toMillis() : now;
+        const age = Math.floor((now - t) / week);
+        if (age >= 0 && age < 4) buckets[3 - age].push(baseCoins(r));
+      });
+      buckets.forEach((arr, i) => {
+        const v = arr.length ? Math.round((arr.reduce((a, b) => a + b, 0) / (arr.length * 5)) * 100) : 0;
+        set(`wk${i + 1}p`, v + "%");
+        document.getElementById(`wk${i + 1}b`).style.height = v + "%";
+      });
+    })();
+  
   </script>
 </body>
 </html>

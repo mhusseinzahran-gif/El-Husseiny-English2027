@@ -80,8 +80,8 @@
       <!-- معلومات الطالب وتنبيه الخصوصية المعدل -->
       <div class="space-y-3 text-center md:text-right flex-1">
         <div>
-          <h2 class="text-xl font-black text-slate-900 dark:text-white">محمد أحمد إبراهيم / Mohamed Ahmed</h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">طالب متميز بالمنصة - Student ID: #12345</p>
+          <h2 id="pfTitle" class="text-xl font-black text-slate-900 dark:text-white">...</h2>
+          <p id="pfIdLine" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Student ID</p>
         </div>
         
         <!-- التنبيه المحدث بحرف الواو -->
@@ -111,23 +111,23 @@
         <div class="space-y-3 text-xs font-bold">
           <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
             <span class="text-slate-400">اسم الطالب / Student Name:</span>
-            <span class="text-slate-900 dark:text-white">محمد أحمد إبراهيم</span>
+            <span id="pfName" class="text-slate-900 dark:text-white">—</span>
           </div>
           <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
             <span class="text-slate-400">المرحلة الدراسية / Educational Stage:</span>
-            <span class="text-slate-900 dark:text-white">المرحلة الإعدادية / Preparatory</span>
+            <span id="pfStage" class="text-slate-900 dark:text-white">—</span>
           </div>
           <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
             <span class="text-slate-400">الصف الدراسي / Grade:</span>
-            <span class="text-slate-900 dark:text-white">الصف الثاني الإعدادي</span>
+            <span id="pfGrade" class="text-slate-900 dark:text-white">—</span>
           </div>
           <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
             <span class="text-slate-400">الجروب / Group:</span>
-            <span class="text-amber-500">مجموعة السبت - الساعة 10:00 صباحاً</span>
+            <span id="pfGroup" class="text-amber-500">—</span>
           </div>
           <div class="flex justify-between py-2">
             <span class="text-slate-400">تاريخ التسجيل / Registration Date:</span>
-            <span class="text-slate-900 dark:text-white" dir="ltr">2026/08/01</span>
+            <span id="pfDate" class="text-slate-900 dark:text-white" dir="ltr">—</span>
           </div>
         </div>
       </div>
@@ -147,15 +147,15 @@
         <div class="space-y-3 text-xs font-bold">
           <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
             <span class="text-slate-400">هاتف الطالب / Student Phone:</span>
-            <span class="text-slate-900 dark:text-white" dir="ltr">01112223344</span>
+            <span id="pfPhone" class="text-slate-900 dark:text-white" dir="ltr">—</span>
           </div>
           <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
             <span class="text-slate-400">هاتف ولي الأمر / Parent Phone:</span>
-            <span class="text-slate-900 dark:text-white" dir="ltr">01009988776</span>
+            <span id="pfParent" class="text-slate-900 dark:text-white" dir="ltr">—</span>
           </div>
           <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
-            <span class="text-slate-400">المحافظة / Governorate:</span>
-            <span class="text-slate-900 dark:text-white">الإسكندرية / Alexandria</span>
+            <span class="text-slate-400">اشتراك الأونلاين / Online Plan:</span>
+            <span id="pfOnline" class="text-slate-900 dark:text-white">—</span>
           </div>
           <div class="flex justify-between py-2">
             <span class="text-slate-400">حالة الحساب / Account Status:</span>
@@ -221,6 +221,20 @@
       document.getElementById("studentAvatar").src = "https://via.placeholder.com/150";
       alert("تم حذف الصورة الشخصية بنجاح.");
     }
+  </script>
+  <script type="module">
+    import { requireStudent, stageOf } from "./platform.js";
+    const set = (id, t) => { document.getElementById(id).textContent = t; };
+    (async () => {
+      const st = await requireStudent();
+      set("pfTitle", st.name); set("pfIdLine", `Student ID: #${st.id}`);
+      set("pfName", st.name); set("pfStage", stageOf(st.grade)); set("pfGrade", st.grade); set("pfGroup", st.group);
+      set("pfPhone", st.phone || "—"); set("pfParent", st.parentPhone || "—");
+      set("pfOnline", st.isPaidOnline ? "مفعل" : "غير مشترك");
+      const d = st.createdAt?.toDate ? st.createdAt.toDate() : null;
+      set("pfDate", d ? `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}` : "—");
+    })();
+  
   </script>
 </body>
 </html>

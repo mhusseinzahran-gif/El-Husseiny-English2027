@@ -104,7 +104,7 @@
           <p id="centerErrorMsg" class="text-[11px] text-rose-500 font-bold text-center hidden"></p>
         </div>
       </div>
-      <div class="mt-6 text-[11px] text-slate-400 text-center font-bold">ملاحظة: 5 محاولات خاطئة تؤدي لحظر الحساب</div>
+      <div class="mt-6 text-[11px] text-slate-400 text-center font-bold">ملاحظة: المحاولات الخاطئة المتكررة تعطّل الدخول مؤقتاً</div>
     </div>
 
     <!-- 2. أونلاين (Online Student) -->
@@ -125,6 +125,7 @@
             حفظ / Save
           </button>
           <p id="onlineSuccessMsg" class="text-[11px] text-emerald-500 font-bold text-center hidden">تم حفظ الحساب بنجاح!</p>
+          <p id="onlineErrorMsg" class="text-[11px] text-rose-500 font-bold text-center hidden"></p>
         </div>
       </div>
       <div class="mt-6 text-[11px] text-slate-400 text-center font-bold">سجل بياناتك للوصول للدروس الكاملة</div>
@@ -218,99 +219,65 @@
       }
     }
 
-    function verifyCenterStudent() {
-      const idInput = document.getElementById("centerIdInput").value.trim().toUpperCase();
-      const errorMsg = document.getElementById("centerErrorMsg");
-      const rememberMe = document.getElementById("rememberStudent").checked;
-
-      if (idInput === "") {
-        errorMsg.classList.remove("hidden");
-        errorMsg.innerText = "الرجاء إدخال الـ ID الخاص بك";
-        return;
-      }
-
-      // قاعدة بيانات أساسية موحدة تضمن عمل الأكواد (مثل LRN776 وغيرها) على أي جهاز (هاتف أو لابتوب)
-      let defaultStudents = [
-        { id: "LRN776", name: "طالب مميز", grade: "الصف الأول الثانوي", group: "مجموعة السنتر", phone: "01225909390", parentPhone: "01225909390", coins: 150, isBanned: false },
-        { id: "OCR819", name: "طالب السنتر", grade: "الصف الخامس", group: "مجموعة المتميزين", phone: "01225909390", parentPhone: "01225909390", coins: 100, isBanned: false },
-        { id: "12345", name: "مستر محمد", grade: "المعلم", group: "الإدارة", phone: "01225909390", parentPhone: "01225909390", coins: 500, isBanned: false }
-      ];
-
-      let storedStudents = JSON.parse(localStorage.getItem('el_husseiny_students'));
-      let students = (storedStudents && storedStudents.length > 0) ? storedStudents : defaultStudents;
-      
-      // التأكد من دمج الأكواد الأساسية لضمان عدم ضياعها
-      defaultStudents.forEach(def => {
-        if (!students.some(s => s.id && s.id.toUpperCase() === def.id)) {
-          students.push(def);
-        }
-      });
-      localStorage.setItem('el_husseiny_students', JSON.stringify(students));
-
-      let bannedList = JSON.parse(localStorage.getItem('el_husseiny_banned')) || [];
-
-      if (bannedList.includes(idInput)) {
-        errorMsg.classList.remove("hidden");
-        errorMsg.innerText = "تم حظر الحساب لتجاوز محاولات الدخول الخاطئة. يرجى التواصل مع المستر لفك الحظر.";
-        return;
-      }
-
-      let foundStudent = students.find(s => s.id && s.id.trim().toUpperCase() === idInput);
-
-      if (foundStudent) {
-        if (foundStudent.isBanned) {
-          errorMsg.classList.remove("hidden");
-          errorMsg.innerText = "عفواً، هذا الحساب محظور حالياً من قبل المعلم.";
-          return;
-        }
-
-        localStorage.setItem("failedAttempts_" + idInput, 0);
-        if (rememberMe) {
-          localStorage.setItem("remembered_student_id", foundStudent.id);
-        } else {
-          localStorage.removeItem("remembered_student_id");
-        }
-        localStorage.setItem("current_active_window", JSON.stringify(foundStudent));
-        errorMsg.classList.add("hidden");
-        window.location.href = "student-dashboard.html";
-      } else {
-        let attemptsKey = "failedAttempts_" + idInput;
-        let failedAttempts = localStorage.getItem(attemptsKey) ? parseInt(localStorage.getItem(attemptsKey)) : 0;
-        failedAttempts++;
-        localStorage.setItem(attemptsKey, failedAttempts);
-        
-        if (failedAttempts >= 5) {
-          bannedList.push(idInput);
-          localStorage.setItem('el_husseiny_banned', JSON.stringify(bannedList));
-          errorMsg.classList.remove("hidden");
-          errorMsg.innerText = "خطأ 5 مرات! تم حظر الحساب، يجب مراجعة المعلم لفك الحظر.";
-        } else {
-          errorMsg.classList.remove("hidden");
-          errorMsg.innerText = `الـ ID غير صحيح. محاولاتك الخاطئة: ${failedAttempts} من 5`;
-        }
-      }
-    }
-
-    function saveOnlineAccount() {
-      const email = document.getElementById("onlineEmail").value.trim();
-      const pass = document.getElementById("onlinePassword").value.trim();
-      const successMsg = document.getElementById("onlineSuccessMsg");
-
-      if(email && pass) {
-        localStorage.setItem("onlineEmail", email);
-        successMsg.classList.remove("hidden");
-        setTimeout(() => {
-          successMsg.classList.add("hidden");
-          window.location.href = "online-lessons.html";
-        }, 1500);
-      } else {
-        alert("الرجاء إدخال البريد الإلكتروني وكلمة المرور");
-      }
-    }
-
     function openVisitorPortal() {
       window.location.href = "visitor.html";
     }
+  </script>
+  <script type="module">
+    import { studentLogin, onlineLogin, onlineSignup } from "./platform.js";
+
+    window.verifyCenterStudent = async function() {
+      const idInput = document.getElementById("centerIdInput").value.trim().toUpperCase();
+      const errorMsg = document.getElementById("centerErrorMsg");
+      const rememberMe = document.getElementById("rememberStudent").checked;
+      const show = (t) => { errorMsg.classList.remove("hidden"); errorMsg.innerText = t; };
+
+      if (idInput === "") return show("الرجاء إدخال الـ ID الخاص بك");
+      errorMsg.classList.add("hidden");
+      try {
+        const st = await studentLogin(idInput, rememberMe);
+        if (rememberMe) localStorage.setItem("remembered_student_id", st.id);
+        else localStorage.removeItem("remembered_student_id");
+        window.location.href = "student-dashboard.html";
+      } catch (e) {
+        if (e.code === "app/banned") show("عفواً، هذا الحساب محظور حالياً من قبل المعلم.");
+        else if (e.code === "auth/too-many-requests") show("تم تعطيل الدخول مؤقتاً لكثرة المحاولات الخاطئة. حاول لاحقاً أو تواصل مع المستر.");
+        else if (e.code === "auth/network-request-failed") show("تعذر الاتصال بالإنترنت.");
+        else show("الـ ID غير صحيح. تأكد من الكود أو تواصل مع المستر.");
+      }
+    };
+
+    // إنشاء حساب أونلاين جديد أو الدخول لحساب موجود بنفس البريد وكلمة المرور
+    window.saveOnlineAccount = async function() {
+      const email = document.getElementById("onlineEmail").value.trim();
+      const pass = document.getElementById("onlinePassword").value;
+      const ok = document.getElementById("onlineSuccessMsg");
+      const err = document.getElementById("onlineErrorMsg");
+      ok.classList.add("hidden"); err.classList.add("hidden");
+      const fail = (t) => { err.innerText = t; err.classList.remove("hidden"); };
+
+      if (!email || !pass) return fail("الرجاء إدخال البريد الإلكتروني وكلمة المرور");
+      if (pass.length < 6) return fail("كلمة المرور يجب ألا تقل عن 6 أحرف");
+
+      const go = () => { ok.classList.remove("hidden"); setTimeout(() => { window.location.href = "online-classes.html"; }, 1000); };
+      try {
+        await onlineLogin(email, pass, true);
+        return go();
+      } catch (e) {
+        if (!["auth/invalid-credential", "auth/user-not-found", "auth/wrong-password"].includes(e.code)) {
+          return fail(e.code === "auth/too-many-requests" ? "محاولات كثيرة، حاول لاحقاً." : "تعذر تسجيل الدخول، تحقق من البيانات.");
+        }
+      }
+      try {
+        await onlineSignup(email, pass, "");
+        go();
+      } catch (e) {
+        if (e.code === "auth/email-already-in-use") fail("كلمة المرور غير صحيحة لهذا البريد.");
+        else if (e.code === "auth/invalid-email") fail("البريد الإلكتروني غير صالح.");
+        else if (e.code === "auth/weak-password") fail("كلمة المرور ضعيفة.");
+        else fail("تعذر إنشاء الحساب، حاول مرة أخرى.");
+      }
+    };
   </script>
 </body>
 </html>

@@ -34,8 +34,8 @@
                     <i class="fa-solid fa-user-graduate"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-black text-slate-900 dark:text-white">Mohamed Hussein Junior</h1>
-                    <p class="text-xs text-slate-400">الصف الثاني الإعدادي - منصة مستر محمد الحسيني</p>
+                    <h1 id="stName" class="text-xl font-black text-slate-900 dark:text-white">...</h1>
+                    <p id="stGrade" class="text-xs text-slate-400">منصة مستر محمد الحسيني</p>
                 </div>
             </div>
             
@@ -45,10 +45,14 @@
                     <i id="themeIcon" class="fa-solid fa-moon text-sm"></i>
                 </button>
 
+                <button onclick="window.studentLogout()" title="تسجيل الخروج" class="w-10 h-10 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl flex items-center justify-center text-rose-400 transition shadow-sm border border-slate-200 dark:border-slate-700">
+                    <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                </button>
+
                 <!-- زر رصيد العملات يوجه لصفحة student-coins.html -->
                 <a href="student-coins.html" class="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 px-5 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 text-amber-500 font-black text-sm transition shadow-sm" title="عرض تفاصيل رصيد العملات">
                     <i class="fa-solid fa-coins"></i>
-                    <span>Coin 450</span>
+                    <span id="coinTotal">Coin 0</span>
                 </a>
             </div>
         </header>
@@ -60,7 +64,7 @@
                     <i class="fa-solid fa-globe"></i>
                 </div>
                 <div>
-                    <h3 class="text-base font-black">شارك المنصة مع أصدقائك واربح +Coin 50!</h3>
+                    <h3 class="text-base font-black">شارك المنصة مع أصدقائك!</h3>
                     <p class="text-xs opacity-90">Share Platform Link - ساعد زملائك في الانضمام لأقوى منصة إنجليزية</p>
                 </div>
             </div>
@@ -118,40 +122,10 @@
 
     <!-- أكواد الجافاسكريبت -->
     <script>
-        function loadStudentDashboard() {
-            const container = document.getElementById('lessonsContainer');
-            container.innerHTML = "";
-
-            let defaultLessons = [
-                { id: "1", title: "شرح قواعد 2 Unit وحل مهارات القراءة والكتابة" },
-                { id: "2", title: "الحصة الثانية: Lesson Four (Unit 2)" },
-                { id: "3", title: "الحصة الثالثة: Review & Tests" }
-            ];
-
-            defaultLessons.forEach((lesson, index) => {
-                let lessonBox = document.createElement('div');
-                lessonBox.className = "bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4 transition hover:border-amber-400/50";
-                
-                lessonBox.innerHTML = `
-                    <div class="flex items-center gap-3 w-full md:w-auto">
-                        <div class="w-10 h-10 bg-amber-400 text-slate-900 rounded-xl flex items-center justify-center font-black text-sm shadow-md">
-                            ${index + 1}
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-black text-slate-900 dark:text-white">${lesson.title}</h4>
-                            <p class="text-[11px] text-slate-400">مدة الحصة: 45 دقيقة | تشمل الواجب والاختبارات</p>
-                        </div>
-                    </div>
-                    <a href="lesson-view.html?id=${lesson.id}" class="bg-amber-400 hover:bg-amber-500 text-slate-900 px-5 py-2.5 rounded-xl font-black text-xs transition shadow-md flex items-center gap-2 w-full md:w-auto justify-center">
-                        دخول الحصة <i class="fa-solid fa-arrow-left"></i>
-                    </a>
-                `;
-                container.appendChild(lessonBox);
-            });
-        }
+        function loadStudentDashboard() {}
 
         function sharePlatformLink() {
-            navigator.clipboard.writeText(window.location.href);
+            navigator.clipboard.writeText(location.origin + '/');
             alert("✨ تم نسخ رابط المنصة بنجاح! شاركه مع أصدقائك.");
         }
 
@@ -170,5 +144,43 @@
         }
     </script>
 
+  <script type="module">
+    import { requireStudent, myLessons, myRecords, totalCoins, logout, esc } from "./platform.js";
+    window.studentLogout = logout;
+    (async () => {
+      const st = await requireStudent();
+      document.getElementById("stName").textContent = st.name;
+      document.getElementById("stGrade").textContent = `${st.grade} | ${st.group} - منصة مستر محمد الحسيني`;
+      const container = document.getElementById("lessonsContainer");
+      let lessons = [], recs = [];
+      try { [lessons, recs] = await Promise.all([myLessons(st, "center"), myRecords(st)]); } catch (e) { container.innerHTML = '<p class="text-xs text-slate-400">تعذر تحميل الحصص حالياً.</p>'; return; }
+      const coins = recs.reduce((s, r) => s + (typeof r.coins === "number" ? r.coins : totalCoins(r)), 0);
+      document.getElementById("coinTotal").textContent = `Coin ${coins}`;
+      container.innerHTML = "";
+      if (lessons.length === 0) { container.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">لا توجد حصص منشورة لمجموعتك حتى الآن.</p>'; return; }
+      lessons.forEach((lesson, index) => {
+        const r = recs.find((x) => x.lessonId === lesson.id);
+        const badge = r?.attendance === "حاضر" ? '<span class="bg-emerald-500/10 text-emerald-500 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-emerald-500/20">حاضر ✅</span>' : "";
+        const box = document.createElement("div");
+        box.className = "bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4 transition hover:border-amber-400/50";
+        box.innerHTML = `
+          <div class="flex items-center gap-3 w-full md:w-auto">
+            <div class="w-10 h-10 bg-amber-400 text-slate-900 rounded-xl flex items-center justify-center font-black text-sm shadow-md">${index + 1}</div>
+            <div>
+              <h4 class="text-sm font-black text-slate-900 dark:text-white">${esc(lesson.title || lesson.lessonName)}</h4>
+              <p class="text-[11px] text-slate-400">${esc(lesson.lessonName)} | تشمل الفيديو والواجب والاختبارات</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 w-full md:w-auto justify-center">
+            ${badge}
+            <a href="lesson-view.html?id=${encodeURIComponent(lesson.id)}" class="bg-amber-400 hover:bg-amber-500 text-slate-900 px-5 py-2.5 rounded-xl font-black text-xs transition shadow-md flex items-center gap-2 justify-center">
+              دخول الحصة <i class="fa-solid fa-arrow-left"></i>
+            </a>
+          </div>`;
+        container.appendChild(box);
+      });
+    })();
+  
+  </script>
 </body>
 </html>

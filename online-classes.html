@@ -33,7 +33,7 @@
   <header class="w-full max-w-6xl mx-auto px-6 py-5 flex flex-wrap justify-between items-center gap-4 z-50">
     <div class="flex items-center gap-3">
       <!-- زر العودة للوحة الطالب -->
-      <a href="student-dashboard.html" class="flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-blue-950 px-4 py-2.5 rounded-2xl text-xs font-black shadow-md transition">
+      <a id="backLink" href="student-dashboard.html" class="flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-blue-950 px-4 py-2.5 rounded-2xl text-xs font-black shadow-md transition">
         <i class="fa-solid fa-arrow-right"></i>
         <span>العودة للوحة الطالب / Back</span>
       </a>
@@ -72,15 +72,15 @@
       
       <!-- حالة الاشتراك وقيمته -->
       <div class="bg-white/10 dark:bg-slate-900/60 px-6 py-4 rounded-2xl backdrop-blur-md border border-white/15 text-center flex flex-col items-center gap-1">
-        <span class="text-xs text-slate-300 font-bold">قيمة الاشتراك: <strong class="text-amber-400">200 جنيه / شهرياً</strong></span>
-        <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-black px-3 py-1 rounded-xl mt-1">
-          الحالة: مشترك ومفعل ✅
+        <span class="text-xs text-slate-300 font-bold">اشتراك الأونلاين الشهري</span>
+        <span id="olState" class="bg-slate-500/20 text-slate-300 border border-slate-500/30 text-[11px] font-black px-3 py-1 rounded-xl mt-1">
+          جاري التحقق...
         </span>
       </div>
     </div>
 
     <!-- قسم الحصة المباشرة القادمة (Live Session Banner) -->
-    <div class="bg-white dark:bg-brand-card border-2 border-amber-400/50 rounded-3xl p-6 shadow-xl space-y-4 relative overflow-hidden">
+    <div id="liveBanner" class="hidden bg-white dark:bg-brand-card border-2 border-amber-400/50 rounded-3xl p-6 shadow-xl space-y-4 relative overflow-hidden">
       <div class="absolute top-0 left-0 bg-amber-400 text-blue-950 px-4 py-1 text-xs font-black rounded-br-2xl">
         بث مباشر قريباً 🔴 Live
       </div>
@@ -101,69 +101,10 @@
     <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl space-y-4">
       <div class="flex justify-between items-center">
         <h3 class="text-base font-black text-slate-900 dark:text-white">أرشيف وحصص الأونلاين المتاحة / Lessons Archive</h3>
-        <span class="text-xs font-bold text-slate-400">إجمالي الحصص: 3 حصص</span>
+        <span id="olCount" class="text-xs font-bold text-slate-400">إجمالي الحصص: 0 حصة</span>
       </div>
 
-      <div class="space-y-4">
-        
-        <!-- الحصة رقم 1 -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 transition gap-4">
-          <div class="flex items-center gap-3.5">
-            <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center font-black text-base">
-              01
-            </div>
-            <div>
-              <h4 class="text-sm font-black text-slate-900 dark:text-white">شرح قواعد Unit 1 والكلمات الأساسية</h4>
-              <p class="text-[11px] text-slate-400">مدة الفيديو: 50 دقيقة | متاح ضمن الاشتراك</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <span class="bg-emerald-500/10 text-emerald-500 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-emerald-500/20">تم الحضور ✅</span>
-            <a href="lesson-view.html" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-black transition">
-              مشاهدة الحصة
-            </a>
-          </div>
-        </div>
-
-        <!-- الحصة رقم 2 -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 transition gap-4">
-          <div class="flex items-center gap-3.5">
-            <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center font-black text-base">
-              02
-            </div>
-            <div>
-              <h4 class="text-sm font-black text-slate-900 dark:text-white">مهارات الاستماع والقصة (The Reader)</h4>
-              <p class="text-[11px] text-slate-400">مدة الفيديو: 40 دقيقة | متاح ضمن الاشتراك</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <span class="bg-emerald-500/10 text-emerald-500 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-emerald-500/20">تم الحضور ✅</span>
-            <a href="lesson-view.html" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-black transition">
-              مشاهدة الحصة
-            </a>
-          </div>
-        </div>
-
-        <!-- الحصة رقم 3 -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 transition gap-4">
-          <div class="flex items-center gap-3.5">
-            <div class="w-12 h-12 rounded-2xl bg-amber-400/10 text-amber-500 flex items-center justify-center font-black text-base">
-              03
-            </div>
-            <div>
-              <h4 class="text-sm font-black text-slate-900 dark:text-white">شرح قواعد Unit 2 وحل مهارات القراءة والكتابة</h4>
-              <p class="text-[11px] text-slate-400">مدة الفيديو: 45 دقيقة | الحصة الحالية</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <span class="bg-amber-400/10 text-amber-500 text-[11px] font-bold px-3 py-1.5 rounded-xl border border-amber-400/20">حاضر ومنتظم ⭐</span>
-            <a href="lesson-view.html" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-4 py-2 rounded-xl text-xs font-black transition shadow-sm">
-              دخول الحصة
-            </a>
-          </div>
-        </div>
-
-      </div>
+      <div id="olList" class="space-y-4"></div>
     </div>
 
   </main>
@@ -195,6 +136,45 @@
       document.documentElement.classList.add("dark");
       document.getElementById("themeIcon").className = "fa-solid fa-moon text-base";
     }
+  </script>
+  <script type="module">
+    import { requireOnline, onlineLessons, esc, logout } from "./platform.js";
+    (async () => {
+      const o = await requireOnline();
+      const state = document.getElementById("olState");
+      const list = document.getElementById("olList");
+      if (!/^[a-z0-9]+@students\.elhusseiny\.app$/i.test(o.user.email || "")) {
+        const back = document.getElementById("backLink");
+        back.href = "gateway.html"; back.querySelector("span").textContent = "العودة للبوابة / Back";
+      }
+      if (!o.active) {
+        state.className = "bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[11px] font-black px-3 py-1 rounded-xl mt-1";
+        state.textContent = "الحالة: بانتظار تفعيل الاشتراك ⏳";
+        list.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">سيتم تفعيل حسابك بعد تأكيد الاشتراك. تواصل مع المستر عبر الواتساب.</p>';
+        return;
+      }
+      state.className = "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-black px-3 py-1 rounded-xl mt-1";
+      state.textContent = "الحالة: مشترك ومفعل ✅";
+      let lessons = [];
+      try { lessons = await onlineLessons(); } catch (e) {}
+      document.getElementById("olCount").textContent = `إجمالي الحصص: ${lessons.length} حصة`;
+      if (!lessons.length) { list.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">لا توجد حصص أونلاين منشورة حتى الآن.</p>'; return; }
+      const colors = ["bg-blue-500/10 text-blue-500", "bg-indigo-500/10 text-indigo-500", "bg-amber-400/10 text-amber-500"];
+      list.innerHTML = lessons.map((l, i) => `
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 transition gap-4">
+          <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-2xl ${colors[i % 3]} flex items-center justify-center font-black text-base">${String(i + 1).padStart(2, "0")}</div>
+            <div>
+              <h4 class="text-sm font-black text-slate-900 dark:text-white">${esc(l.title || l.lessonName)}</h4>
+              <p class="text-[11px] text-slate-400">${esc(l.lessonName)} | متاح ضمن الاشتراك</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <a href="lesson-view.html?cat=online&id=${encodeURIComponent(l.id)}" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-4 py-2 rounded-xl text-xs font-black transition shadow-sm">دخول الحصة</a>
+          </div>
+        </div>`).join("");
+    })();
+  
   </script>
 </body>
 </html>

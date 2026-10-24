@@ -65,12 +65,12 @@
         </div>
         <div>
           <h3 class="text-xs font-bold text-blue-900/80">إجمالي رصيد العملات والنجوم المكتسبة</h3>
-          <h1 class="text-3xl md:text-4xl font-black mt-1">6 Coins <span class="text-xs font-bold bg-white/20 px-3 py-1 rounded-xl">رصيد ممتاز</span></h1>
+          <h1 class="text-3xl md:text-4xl font-black mt-1"><span id="cTotal">0</span> Coins <span id="cTag" class="text-xs font-bold bg-white/20 px-3 py-1 rounded-xl">—</span></h1>
         </div>
       </div>
       <div class="bg-white/90 dark:bg-brand-card dark:text-white px-6 py-4 rounded-2xl shadow-md text-center">
         <span class="text-xs font-bold text-slate-500 dark:text-slate-400 block">مستوى المكافآت</span>
-        <span class="text-sm font-black text-amber-500">المستوى الذهبي 🌟</span>
+        <span id="cLevel" class="text-sm font-black text-amber-500">—</span>
       </div>
     </div>
 
@@ -92,8 +92,8 @@
           <p class="text-xs text-slate-400 mt-0.5">Homework</p>
         </div>
         <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between">
-          <span>الواجبات المسلمة: 1</span>
-          <span class="text-emerald-500">تم التسليم</span>
+          <span id="cHw">الواجبات المسلمة: 0</span>
+          <span id="cHwS" class="text-emerald-500">—</span>
         </div>
       </div>
 
@@ -112,8 +112,8 @@
           <p class="text-xs text-slate-400 mt-0.5">Attendance</p>
         </div>
         <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between">
-          <span>التزام الحصص: منتظم</span>
-          <span class="text-emerald-500">حاضر</span>
+          <span id="cAtt">الحصص المحضورة: 0</span>
+          <span id="cAttS" class="text-emerald-500">—</span>
         </div>
       </div>
 
@@ -132,8 +132,8 @@
           <p class="text-xs text-slate-400 mt-0.5">Paper Test</p>
         </div>
         <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between">
-          <span>الاختبارات: 1</span>
-          <span class="text-amber-500 font-extrabold">ممتاز</span>
+          <span id="cPaper">الاختبارات: 0</span>
+          <span id="cPaperS" class="text-amber-500 font-extrabold">—</span>
         </div>
       </div>
 
@@ -152,8 +152,8 @@
           <p class="text-xs text-slate-400 mt-0.5">Electronic Test</p>
         </div>
         <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between">
-          <span>عدد الاختبارات: 1</span>
-          <span class="text-amber-500 font-extrabold">ممتاز</span>
+          <span id="cElec">عدد الاختبارات: 0</span>
+          <span id="cElecS" class="text-amber-500 font-extrabold">—</span>
         </div>
       </div>
 
@@ -172,8 +172,8 @@
           <p class="text-xs text-slate-400 mt-0.5">Dictation</p>
         </div>
         <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between">
-          <span>الجلسات: 1</span>
-          <span class="text-amber-500 font-extrabold">ممتاز</span>
+          <span id="cDict">الجلسات: 0</span>
+          <span id="cDictS" class="text-amber-500 font-extrabold">—</span>
         </div>
       </div>
 
@@ -192,8 +192,8 @@
           <p class="text-xs text-slate-400 mt-0.5">Share Platform Link (خارج المنصة فقط)</p>
         </div>
         <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between">
-          <span>المشاركات الصالحة: 1 كوين / يوم</span>
-          <span class="text-amber-500">يُمنع النشر لأعضاء المنصة</span>
+          <span id="cBonus">مكافآت المعلم: 0 Coin</span>
+          <span class="text-amber-500">يمنحها المعلم</span>
         </div>
       </div>
 
@@ -228,6 +228,32 @@
       document.documentElement.classList.add("dark");
       document.getElementById("themeIcon").className = "fa-solid fa-moon text-base";
     }
+  </script>
+  <script type="module">
+    import { requireStudent, myRecords, totalCoins, baseCoins, levelOf, COIN_RULES } from "./platform.js";
+    const set = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+    const num = (v) => { const n = parseFloat(String(v ?? "").split("/")[0]); return isNaN(n) ? 0 : n; };
+    (async () => {
+      const st = await requireStudent();
+      let recs = [];
+      try { recs = await myRecords(st); } catch (e) {}
+      const total = recs.reduce((s, r) => s + (typeof r.coins === "number" ? r.coins : totalCoins(r)), 0);
+      const lv = levelOf(total);
+      set("cTotal", total); set("cTag", lv.tag); set("cLevel", lv.name);
+      const hw = recs.filter((r) => r.homework && r.homework !== "لم يسلم");
+      const att = recs.filter((r) => r.attendance === "حاضر");
+      const paper = recs.filter((r) => String(r.paper ?? "").trim() !== "" && num(r.paper) > 0);
+      const elec = recs.filter((r) => r.electronic === "تم");
+      const dict = recs.filter((r) => String(r.dictation ?? "").trim() !== "" && num(r.dictation) > 0);
+      const bonus = recs.reduce((s, r) => s + (parseFloat(r.bonus) || 0), 0);
+      set("cHw", `الواجبات المسلمة: ${hw.length}`); set("cHwS", hw.length ? `+${hw.length * COIN_RULES.homework} Coin` : "لا يوجد");
+      set("cAtt", `الحصص المحضورة: ${att.length} من ${recs.length}`); set("cAttS", att.length ? `+${att.length * COIN_RULES.attendance} Coin` : "لا يوجد");
+      set("cPaper", `الاختبارات: ${paper.length}`); set("cPaperS", paper.length ? `+${paper.length * COIN_RULES.paper} Coin` : "لا يوجد");
+      set("cElec", `عدد الاختبارات: ${elec.length}`); set("cElecS", elec.length ? `+${elec.length * COIN_RULES.electronic} Coin` : "لا يوجد");
+      set("cDict", `الجلسات: ${dict.length}`); set("cDictS", dict.length ? `+${dict.length * COIN_RULES.dictation} Coin` : "لا يوجد");
+      set("cBonus", `مكافآت المعلم: ${bonus} Coin`);
+    })();
+  
   </script>
 </body>
 </html>

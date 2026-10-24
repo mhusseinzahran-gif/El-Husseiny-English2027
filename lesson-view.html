@@ -60,15 +60,15 @@
     <!-- عنوان الحصة ورقمها -->
     <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
       <div>
-        <span class="bg-amber-400/10 text-amber-500 border border-amber-400/20 px-3.5 py-1.5 rounded-xl text-xs font-black">
-          الحصة رقم (3) - Lesson Three 📚
+        <span id="lessonBadge" class="bg-amber-400/10 text-amber-500 border border-amber-400/20 px-3.5 py-1.5 rounded-xl text-xs font-black">
+          الحصة 📚
         </span>
-        <h1 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-2">شرح قواعد Unit 2 وحل مهارات القراءة والكتابة</h1>
+        <h1 id="lessonTitle" class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-2">جاري التحميل...</h1>
         <p id="studentGradeDisplay" class="text-xs text-slate-400 mt-1">جاري تحميل الصف الدراسي...</p>
       </div>
       <div class="bg-blue-500/10 border border-blue-500/20 px-4 py-3 rounded-2xl text-center">
         <span class="text-xs font-bold text-blue-500 block">حالة الحضور والاشتراك</span>
-        <span class="text-sm font-black text-slate-900 dark:text-white">حاضر ومنتظم ✅</span>
+        <span id="attStatus" class="text-sm font-black text-slate-900 dark:text-white">—</span>
       </div>
     </div>
 
@@ -88,7 +88,7 @@
       </div>
 
       <!-- إطار الفيديو الوهمي -->
-      <div class="relative w-full aspect-video rounded-2xl bg-slate-900 overflow-hidden shadow-inner flex items-center justify-center group">
+      <div id="videoBox" class="relative w-full aspect-video rounded-2xl bg-slate-900 overflow-hidden shadow-inner flex items-center justify-center group">
         <div class="absolute inset-0 bg-cover bg-center opacity-60" style="background-image: url('https://via.placeholder.com/1200x675')"></div>
         <div class="absolute inset-0 bg-blue-950/40 backdrop-blur-[2px]"></div>
         
@@ -106,13 +106,13 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       
       <!-- 1. الواجب / Homework -->
-      <a href="#" class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition group">
+      <a id="cardHw" href="#" class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition group">
         <div class="flex justify-between items-start mb-4">
           <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition shadow-inner">
             <i class="fa-solid fa-book-open-reader"></i>
           </div>
-          <span class="bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-3 py-1 rounded-xl text-xs font-black">
-            تم التسليم 📚
+          <span id="hwBadge" class="bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-3 py-1 rounded-xl text-xs font-black">
+            —
           </span>
         </div>
         <div>
@@ -120,8 +120,8 @@
           <p class="text-xs text-slate-400 mt-0.5">Homework & Exercises</p>
         </div>
         <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between items-center">
-          <span>الحصول على: +20 Coin</span>
-          <span class="text-blue-500 group-hover:underline">عرض الواجب <i class="fa-solid fa-arrow-left text-[10px]"></i></span>
+          <span id="hwText">المطلوب: —</span>
+          <span id="hwCoin" class="text-blue-500">+1 Coin</span>
         </div>
       </a>
 
@@ -131,8 +131,8 @@
           <div class="w-14 h-14 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition shadow-inner">
             <i class="fa-solid fa-user-check"></i>
           </div>
-          <span class="bg-blue-500/10 text-blue-500 border border-blue-500/20 px-3 py-1 rounded-xl text-xs font-black">
-            حاضر ✅
+          <span id="attBadge" class="bg-blue-500/10 text-blue-500 border border-blue-500/20 px-3 py-1 rounded-xl text-xs font-black">
+            —
           </span>
         </div>
         <div>
@@ -140,19 +140,19 @@
           <p class="text-xs text-slate-400 mt-0.5">Attendance Record</p>
         </div>
         <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between items-center">
-          <span>مكافأة الحضور: +20 Coin</span>
-          <span class="text-emerald-500">تم بالموعد</span>
+          <span id="attCoin">مكافأة الحضور: +1 Coin</span>
+          <span id="attNote" class="text-emerald-500"></span>
         </div>
       </div>
 
       <!-- 3. الاختبار الورقي / Paper Test -->
-      <a href="#" class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition group">
+      <a id="cardPaper" href="#" class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition group">
         <div class="flex justify-between items-start mb-4">
           <div class="w-14 h-14 rounded-2xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition shadow-inner">
             <i class="fa-solid fa-file-pen"></i>
           </div>
-          <span class="bg-amber-400/10 text-amber-500 border border-amber-400/20 px-3 py-1 rounded-xl text-xs font-black">
-            ممتاز 📝
+          <span id="paperBadge" class="bg-amber-400/10 text-amber-500 border border-amber-400/20 px-3 py-1 rounded-xl text-xs font-black">
+            —
           </span>
         </div>
         <div>
@@ -160,19 +160,19 @@
           <p class="text-xs text-slate-400 mt-0.5">Paper Test</p>
         </div>
         <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between items-center">
-          <span>التقييم العام</span>
-          <span class="text-blue-500 group-hover:underline">عرض الدرجة <i class="fa-solid fa-arrow-left text-[10px]"></i></span>
+          <span>درجة الاختبار الورقي</span>
+          <span id="paperCoin" class="text-blue-500">+1 Coin</span>
         </div>
       </a>
 
       <!-- 4. الاختبار الالكتروني / Electronic Test -->
-      <a href="#" class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition group">
+      <a id="cardElec" href="#" class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition group">
         <div class="flex justify-between items-start mb-4">
           <div class="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition shadow-inner">
             <i class="fa-solid fa-laptop-code"></i>
           </div>
-          <span class="bg-amber-400/10 text-amber-500 border border-amber-400/20 px-3 py-1 rounded-xl text-xs font-black">
-            ممتاز 💻
+          <span id="elecBadge" class="bg-amber-400/10 text-amber-500 border border-amber-400/20 px-3 py-1 rounded-xl text-xs font-black">
+            —
           </span>
         </div>
         <div>
@@ -180,19 +180,19 @@
           <p class="text-xs text-slate-400 mt-0.5">Electronic Test</p>
         </div>
         <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between items-center">
-          <span>الدرجة: 10 / 10</span>
-          <span class="text-blue-500 group-hover:underline">دخول الاختبار <i class="fa-solid fa-arrow-left text-[10px]"></i></span>
+          <span id="elecText">الاختبار الإلكتروني</span>
+          <span id="elecLink" class="text-blue-500 group-hover:underline">دخول الاختبار <i class="fa-solid fa-arrow-left text-[10px]"></i></span>
         </div>
       </a>
 
       <!-- 5. الإملاء / Dictation -->
-      <a href="#" class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition group">
+      <a id="cardDict" href="#" class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition group">
         <div class="flex justify-between items-start mb-4">
           <div class="w-14 h-14 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition shadow-inner">
             <i class="fa-solid fa-microphone-lines"></i>
           </div>
-          <span class="bg-amber-400/10 text-amber-500 border border-amber-400/20 px-3 py-1 rounded-xl text-xs font-black">
-            ممتاز 🎙️
+          <span id="dictBadge" class="bg-amber-400/10 text-amber-500 border border-amber-400/20 px-3 py-1 rounded-xl text-xs font-black">
+            —
           </span>
         </div>
         <div>
@@ -200,20 +200,20 @@
           <p class="text-xs text-slate-400 mt-0.5">Dictation Session</p>
         </div>
         <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 font-bold flex justify-between items-center">
-          <span>تقييم الكلمات</span>
-          <span class="text-blue-500 group-hover:underline">التفاصيل <i class="fa-solid fa-arrow-left text-[10px]"></i></span>
+          <span>درجة الإملاء</span>
+          <span id="dictCoin" class="text-blue-500">+1 Coin</span>
         </div>
       </a>
 
       <!-- 6. السلوك / Behavior -->
-      <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition group">
+      <div id="cardBeh" class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-amber-400 transition group">
         <div>
           <div class="flex justify-between items-start mb-4">
             <div class="w-14 h-14 rounded-2xl bg-teal-500/10 text-teal-500 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition shadow-inner">
               <i class="fa-solid fa-face-smile-beam"></i>
             </div>
-            <span class="bg-teal-500/10 text-teal-500 border border-teal-500/20 px-3 py-1 rounded-xl text-xs font-black">
-              🟢 ممتاز ومنضبط
+            <span id="behBadge" class="bg-teal-500/10 text-teal-500 border border-teal-500/20 px-3 py-1 rounded-xl text-xs font-black">
+              —
             </span>
           </div>
           <div>
@@ -223,7 +223,7 @@
         </div>
         <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
           <p class="text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/50 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 leading-relaxed">
-            <strong class="text-teal-500 block mb-1">ملاحظات المستر:</strong> الطالب أظهر تركيزاً عالياً جداً، وشارك بفعالية في قراءة الكلمات الجديدة وحل التدريبات الشفوية.
+            <strong class="text-teal-500 block mb-1">ملاحظات المستر:</strong> <span id="behNote">لا توجد ملاحظات لهذه الحصة.</span>
           </p>
         </div>
       </div>
@@ -238,14 +238,7 @@
   </footer>
 
   <script>
-    function loadStudentData() {
-      let student = JSON.parse(localStorage.getItem("current_active_student"));
-      if (student && student.grade) {
-        document.getElementById("studentGradeDisplay").innerText = student.grade;
-      } else {
-        document.getElementById("studentGradeDisplay").innerText = "الصف الثالث الثانوي - Secondary Stage";
-      }
-    }
+    function loadStudentData() {}
 
     function toggleTheme() {
       const html = document.documentElement;
@@ -268,6 +261,83 @@
       document.documentElement.classList.add("dark");
       document.getElementById("themeIcon").className = "fa-solid fa-moon text-base";
     }
+  </script>
+  <script type="module">
+    import { requireStudent, requireOnline, db, doc, getDoc, COL, COIN_RULES, myLessons, sKey, ytEmbed, esc } from "./platform.js";
+    const $ = (id) => document.getElementById(id);
+    const params = new URLSearchParams(location.search);
+    const lid = params.get("id");
+    const isOnline = params.get("cat") === "online";
+    const back = (t) => { $("lessonTitle").textContent = t; };
+    const set = (id, t) => { const el = $(id); if (el) el.textContent = t; };
+    const num = (v) => { const n = parseFloat(String(v ?? "").split("/")[0]); return isNaN(n) ? 0 : n; };
+    const noLink = (id) => { const a = $(id); if (a) { a.removeAttribute("href"); a.classList.add("cursor-default"); } };
+
+    (async () => {
+      let student = null, user = null;
+      if (isOnline) { const o = await requireOnline(); if (!o.active) { back("اشتراك الأونلاين غير مفعل بعد. تواصل مع المستر."); return; } user = o; }
+      else student = await requireStudent();
+      if (!lid) { location.replace(isOnline ? "online-classes.html" : "student-dashboard.html"); return; }
+
+      let lesson;
+      try {
+        const snap = await getDoc(doc(db, COL.lessons, lid));
+        if (!snap.exists()) return back("هذه الحصة غير موجودة.");
+        lesson = snap.data();
+      } catch (e) { return back("لا تملك صلاحية عرض هذه الحصة."); }
+      if (!isOnline && lesson.group !== "عام" && lesson.group !== student.group) return back("هذه الحصة غير متاحة لمجموعتك.");
+
+      set("lessonTitle", lesson.title || lesson.lessonName);
+      set("studentGradeDisplay", isOnline ? "حصة أونلاين" : `${student.grade} | ${student.group}`);
+
+      // رقم الحصة داخل قائمة الطالب
+      if (!isOnline) {
+        const list = await myLessons(student, "center");
+        const i = list.findIndex((l) => l.id === lid);
+        set("lessonBadge", `الحصة رقم (${i >= 0 ? i + 1 : "-"}) - ${lesson.lessonName} 📚`);
+      } else set("lessonBadge", `${lesson.lessonName} 📚`);
+
+      // الفيديو
+      const embed = ytEmbed(lesson.video);
+      const box = $("videoBox");
+      if (embed) box.innerHTML = `<iframe class="absolute inset-0 w-full h-full" src="${embed}" title="Lesson video" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+      else if (lesson.video && /^https?:\/\//i.test(lesson.video)) box.innerHTML = `<a href="${esc(lesson.video)}" target="_blank" rel="noopener" class="relative bg-amber-400 hover:bg-amber-500 text-blue-950 px-6 py-3 rounded-2xl font-black text-sm shadow-xl">فتح فيديو الشرح <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i></a>`;
+      else box.innerHTML = `<span class="relative text-slate-300 text-sm font-bold">لم يتم إضافة فيديو لهذه الحصة بعد</span>`;
+
+      // الواجب
+      set("hwText", lesson.homework ? `المطلوب: ${lesson.homework}` : "لا يوجد واجب مضاف");
+      // الاختبار الإلكتروني
+      const quizOk = lesson.quiz && /^https?:\/\//i.test(lesson.quiz);
+      if (quizOk) { const a = $("cardElec"); a.href = lesson.quiz; a.target = "_blank"; a.rel = "noopener"; }
+      else { noLink("cardElec"); set("elecLink", "لا يوجد رابط بعد"); }
+
+      noLink("cardHw"); noLink("cardPaper"); noLink("cardDict");
+      set("hwCoin", `+${COIN_RULES.homework} Coin`); set("paperCoin", `+${COIN_RULES.paper} Coin`); set("dictCoin", `+${COIN_RULES.dictation} Coin`);
+      set("attCoin", `مكافأة الحضور: +${COIN_RULES.attendance} Coin`);
+
+      if (isOnline) {
+        ["cardPaper", "cardDict", "cardBeh"].forEach((id) => { $(id).style.display = "none"; });
+        set("attStatus", "حصة أونلاين"); set("attBadge", "أونلاين 💻"); set("hwBadge", "حسب المطلوب 📚"); set("elecBadge", quizOk ? "متاح 💻" : "—");
+        return;
+      }
+
+      // سجل الطالب في هذه الحصة
+      let r = null;
+      try { const rs = await getDoc(doc(db, COL.records, `${lid}__${sKey(student.id)}`)); if (rs.exists()) r = rs.data(); } catch (e) {}
+      const dash = "لم يُسجَّل بعد";
+      set("attStatus", r?.attendance === "حاضر" ? "حاضر ✅" : r?.attendance === "غائب" ? "غائب ❌" : dash);
+      set("attBadge", r?.attendance === "حاضر" ? "حاضر ✅" : r?.attendance === "غائب" ? "غائب ❌" : "—");
+      set("attNote", r?.attendance === "حاضر" ? "تم تسجيل الحضور" : "");
+      set("hwBadge", r?.homework ? (r.homework === "لم يسلم" ? "لم يُسلَّم" : `${r.homework} 📚`) : "بانتظار التقييم");
+      set("paperBadge", r && String(r.paper ?? "").trim() !== "" ? `${r.paper} 📝` : dash);
+      set("elecBadge", r?.electronic === "تم" ? "تم الاختبار 💻" : r?.electronic === "لم يتم" ? "لم يتم" : (quizOk ? "متاح 💻" : "—"));
+      set("elecText", r?.electronic === "تم" ? "تم تسجيل الاختبار" : "الاختبار الإلكتروني");
+      set("dictBadge", r && String(r.dictation ?? "").trim() !== "" ? `${r.dictation} 🎙️` : dash);
+      set("behBadge", r?.note ? "📝 ملاحظة من المستر" : "—");
+      if (r?.note) set("behNote", r.note);
+      if (r && num(r.bonus) > 0) set("behNote", `${r.note ? r.note + " — " : ""}مكافأة المستر: +${r.bonus} Coin 🎉`);
+    })();
+  
   </script>
 </body>
 </html>
