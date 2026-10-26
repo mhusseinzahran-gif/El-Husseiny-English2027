@@ -131,6 +131,10 @@
       <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
         <label class="text-xs font-bold text-slate-400 block">المجموعات المتاحة حالياً بالمنصة:</label>
         <div id="groupsBadgesContainer" class="flex flex-wrap gap-2"></div>
+        <div id="recoverGroupsBox" class="hidden bg-rose-500/10 border border-rose-500/30 rounded-2xl p-3 flex flex-wrap items-center justify-between gap-3">
+          <p id="recoverGroupsText" class="text-xs font-bold text-rose-300"></p>
+          <button type="button" onclick="recoverGroups()" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-4 py-2 rounded-xl font-black text-xs transition">استعادة المجموعات المفقودة</button>
+        </div>
       </div>
     </div>
 
@@ -201,6 +205,11 @@
           <select id="inGroup" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-amber-400 focus:outline-none"></select>
         </div>
 
+        <div class="space-y-1 md:col-span-3">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">البريد الإلكتروني للطالب (اختياري - لتسجيل الاختبارات الإلكترونية)</label>
+          <input type="email" id="inEmail" dir="ltr" placeholder="student@gmail.com" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none">
+        </div>
+
         <div class="md:col-span-3 flex justify-end gap-3 pt-2">
           <button type="button" id="btnCancelEdit" onclick="cancelEditStudent()" class="hidden bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 px-6 py-3 rounded-xl font-black text-xs transition flex items-center gap-2">
             <i class="fa-solid fa-xmark"></i> إلغاء التعديل
@@ -210,6 +219,30 @@
           </button>
         </div>
       </form>
+
+      <div class="pt-4 mt-2 border-t border-slate-700 space-y-3">
+        <h4 class="text-xs font-black text-white flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square text-amber-400"></i> الطلاب المسجلون في هذه المجموعة (عدّل أي بيان ثم اضغط "حفظ")
+        </h4>
+        <p id="inlineHint" class="text-[11px] text-slate-400"></p>
+        <div class="overflow-x-auto w-full">
+          <table class="w-full text-right text-xs min-w-[1000px]">
+            <thead>
+              <tr class="bg-slate-900 text-slate-400 border-b border-slate-800">
+                <th class="p-2">الكود</th>
+                <th class="p-2">اسم الطالب</th>
+                <th class="p-2">هاتف الطالب</th>
+                <th class="p-2">هاتف ولي الأمر</th>
+                <th class="p-2">البريد الإلكتروني</th>
+                <th class="p-2">الصف</th>
+                <th class="p-2">الجروب</th>
+                <th class="p-2">إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="inlineStudentsBody"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- نظام التحكم المستقل للحصص -->
@@ -377,6 +410,15 @@
         <i class="fa-solid fa-clipboard-user text-amber-500"></i> 4. جدول متابعة حضور ودرجات الطلاب
       </h3>
       <p id="attendanceContext" class="text-xs font-bold text-amber-400 -mt-3"></p>
+      <details class="bg-slate-900 border border-slate-700 rounded-2xl p-3">
+        <summary class="text-xs font-black text-amber-400 cursor-pointer">تسجيل الاختبار الإلكتروني من قائمة بريد إلكتروني (نتائج Google Forms)</summary>
+        <div class="space-y-2 mt-3">
+          <p class="text-[11px] text-slate-400">الصق هنا إيميلات الطلاب الذين حلّوا الاختبار (عمود البريد من ردود النموذج). كل طالب يطابق بريده المسجل يُسجَّل له "تم" ويحصل على Coin تلقائياً لهذه الحصة.</p>
+          <textarea id="emailsPaste" rows="4" dir="ltr" placeholder="student1@gmail.com&#10;student2@gmail.com" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-amber-400"></textarea>
+          <button type="button" onclick="applyElectronicEmails()" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-4 py-2 rounded-xl font-black text-xs transition">تسجيل الاختبار للطلاب المطابقين</button>
+          <p id="emailsResult" class="text-xs font-bold text-emerald-400"></p>
+        </div>
+      </details>
       <div class="overflow-x-auto w-full">
         <table class="w-full text-right text-xs min-w-[1350px]">
           <thead>
@@ -437,6 +479,7 @@
     let unsubs = [];
     let lessonDirty = false;
     let fetchTimer = null;
+    let groupsLoaded = false, studentsLoaded = false, inlineDirty = false;
 
     const $ = (id) => document.getElementById(id);
     const byName = (a, b) => String(a.name).localeCompare(String(b.name), 'ar');
@@ -476,16 +519,21 @@
 
       unsubs.push(onSnapshot(collection(db, COL.groups), (snap) => {
         customGroups = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort(byName);
+        groupsLoaded = true;
         renderGroupsBadges();
         populateAllGroupDropdowns();
         loadAttendanceTable();
+        updateRecoverBox();
       }, onErr));
 
       unsubs.push(onSnapshot(collection(db, COL.students), (snap) => {
         studentsData = snap.docs.map(d => d.data()).sort(byName);
+        studentsLoaded = true;
         loadTeacherProfiles();
         loadAttendanceTable();
         renderTopStudents();
+        renderInlineStudents();
+        updateRecoverBox();
       }, onErr));
 
       unsubs.push(onSnapshot(collection(db, COL.lessons), (snap) => {
@@ -605,6 +653,7 @@
         sel.insertBefore(keep, sel.firstChild);
         sel.value = previous;
       }
+      renderInlineStudents();
     };
 
     window.populateAllGroupDropdowns = function() {
@@ -753,7 +802,8 @@
       }
     }
 
-    function resetStudentFormUI() {
+    function resetStudentFormUI(keep) {
+      const keepGrade = $('inGrade').value, keepGroup = $('inGroup').value;
       editingStudentId = null;
       $('addStudentForm').reset();
       $('btnSaveStudent').innerHTML = '<i class="fa-solid fa-user-plus"></i> حفظ الطالب بسجلات السنتر';
@@ -761,10 +811,11 @@
       $('btnGenId').disabled = false;
       $('btnGenId').classList.remove('opacity-50', 'cursor-not-allowed');
       window.generateNewId();
-      window.updateFormGroupsDropdown();
+      if (keep) { $('inGrade').value = keepGrade; window.updateFormGroupsDropdown(keepGroup); }
+      else window.updateFormGroupsDropdown();
     }
 
-    window.cancelEditStudent = function() { resetStudentFormUI(); };
+    window.cancelEditStudent = function() { resetStudentFormUI(false); };
 
     // تحميل بيانات طالب داخل نموذج التسجيل لتعديلها
     window.editStudent = function(id) {
@@ -775,6 +826,7 @@
       $('inStudentId').value = st.id;
       $('inStudentPhone').value = st.phone || '';
       $('inParentPhone').value = st.parentPhone || '';
+      $('inEmail').value = st.email || '';
       $('inGrade').value = st.grade;
       window.updateFormGroupsDropdown(st.group);
       $('btnSaveStudent').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> تحديث بيانات الطالب';
@@ -795,8 +847,10 @@
         grade: $('inGrade').value,
         group: groupVal,
         phone: $('inStudentPhone').value.trim(),
-        parentPhone: $('inParentPhone').value.trim()
+        parentPhone: $('inParentPhone').value.trim(),
+        email: $('inEmail').value.trim().toLowerCase()
       };
+      if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return alert("البريد الإلكتروني غير صحيح.");
 
       // ===== وضع التعديل: تحديث بيانات الطالب مع الحفاظ على سجلاته =====
       if (editingStudentId) {
@@ -811,7 +865,7 @@
             await updateDoc(doc(db, COL.records, r.id), { grade: formData.grade, group: formData.group });
           }
         } catch (err) { return alert("تعذر تحديث البيانات. تحقق من الاتصال وصلاحيات Firestore."); }
-        resetStudentFormUI();
+        resetStudentFormUI(true);
         alert("تم تحديث بيانات الطالب بنجاح!");
         return;
       }
@@ -832,7 +886,7 @@
           ? "هذا الكود مستخدم لحساب آخر، اضغط زر التوليد للحصول على كود جديد."
           : "تعذر تسجيل الطالب. تحقق من الاتصال وصلاحيات Firestore.");
       }
-      resetStudentFormUI();
+      resetStudentFormUI(true);
       alert("تم تسجيل الطالب بنجاح!");
     });
 
@@ -862,7 +916,7 @@
         card.innerHTML = `
           <div>
             <h4 class="text-xs font-black text-white">${esc(st.name)} <span class="text-amber-400 font-mono">(${esc(st.id)})</span>${st.isBanned ? ' <span class="text-rose-400">🚫 محظور</span>' : ''}</h4>
-            <p class="text-[10px] text-slate-400">${esc(st.grade)} | ${esc(st.group)} | هاتف: ${esc(st.phone)}</p>
+            <p class="text-[10px] text-slate-400">${esc(st.grade)} | ${esc(st.group)} | هاتف: ${esc(st.phone)}${st.email ? ' | ' + esc(st.email) : ''}</p>
           </div>
           <div class="flex items-center gap-2">
             <button onclick="window.togglePaidOnlineStatus('${st.id}', ${!st.isPaidOnline})" class="px-3 py-1.5 rounded-xl text-xs font-bold ${st.isPaidOnline ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-800 text-slate-400 border border-slate-700'}">
@@ -926,7 +980,7 @@
         let tr = document.createElement('tr');
         tr.className = "border-b border-slate-800 hover:bg-slate-900/40 transition";
         tr.innerHTML = `
-          <td class="p-3 font-bold text-white">${esc(st.name)} <span class="block text-[10px] text-amber-400 font-mono">${esc(st.id)}</span></td>
+          <td class="p-3 font-bold text-white">${esc(st.name)} <span class="block text-[10px] text-amber-400 font-mono">${esc(st.id)}</span>${st.email ? `<span class="block text-[10px] text-slate-400" dir="ltr">${esc(st.email)}</span>` : ''}</td>
           <td class="p-3 text-slate-300"><span class="block text-[11px] font-bold">${esc(st.grade)}</span><span class="block text-[10px] text-slate-400">${esc(st.group)}</span></td>
           <td class="p-3"><button onclick="window.togglePaidOnlineStatus('${st.id}', ${!st.isPaidOnline})" class="px-2.5 py-1 rounded-xl text-[10px] font-bold ${st.isPaidOnline ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-800 text-slate-400'}">${st.isPaidOnline ? 'مفعل (50 ج)' : 'غير مشترك'}</button></td>
           <td class="p-3"><select onchange="window.updateField('${st.id}', 'attendance', this.value)" class="${selCls}">${optList(['', 'حاضر', 'غائب'], r.attendance || '')}</select></td>
@@ -973,7 +1027,7 @@
 
     window.deleteStudent = async function(id) {
       if (confirm("حذف هذا الطالب وكل سجلاته؟")) {
-        if (editingStudentId && sKey(editingStudentId) === sKey(id)) resetStudentFormUI();
+        if (editingStudentId && sKey(editingStudentId) === sKey(id)) resetStudentFormUI(false);
         try {
           for (const r of allRecords.filter(r => r.studentKey === sKey(id))) await deleteDoc(doc(db, COL.records, r.id));
           await deleteDoc(doc(db, COL.students, sKey(id)));
@@ -1010,6 +1064,134 @@
       try { await updateDoc(doc(db, COL.online, uid), { active: state }); } catch (e) { alert("تعذر التحديث."); }
     };
 
+    // ================= جدول الطلاب المسجلين (تعديل مباشر داخل قسم التسجيل) =================
+    const rowInp = "w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs font-bold text-amber-400 focus:outline-none focus:border-amber-400";
+
+    function gradeOptionsHtml(sel) {
+      const grades = Array.from($('inGrade').options).map(o => o.value);
+      return grades.map(g => `<option value="${esc(g)}" ${g === sel ? 'selected' : ''}>${esc(g)}</option>`).join('');
+    }
+    function groupOptionsHtml(grade, sel) {
+      const names = groupsOfGrade(grade).map(g => g.name);
+      if (sel && !names.includes(sel)) names.unshift(sel);
+      return names.map(n => `<option value="${esc(n)}" ${n === sel ? 'selected' : ''}>${esc(n)}</option>`).join('');
+    }
+
+    function renderInlineStudents() {
+      const body = $('inlineStudentsBody');
+      if (!body) return;
+      if (body.contains(document.activeElement)) { inlineDirty = true; return; } // لا نقاطع الكتابة
+      const grade = $('inGrade').value, group = $('inGroup').value;
+      const hint = $('inlineHint');
+      const list = studentsData.filter(st => st.grade === grade && (!group || st.group === group));
+      if (hint) hint.textContent = group ? `${list.length} طالب في ${group}` : 'اختر الصف والجروب أعلاه لعرض طلابها هنا.';
+      body.innerHTML = '';
+      if (!list.length) {
+        body.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-xs text-slate-400">لا يوجد طلاب مسجلون في هذه المجموعة بعد.</td></tr>`;
+        return;
+      }
+      list.forEach(st => {
+        const id = st.id;
+        const tr = document.createElement('tr');
+        tr.className = "border-b border-slate-800";
+        tr.innerHTML = `
+          <td class="p-2 text-amber-400 font-mono text-[11px]">${esc(id)}</td>
+          <td class="p-2"><input data-id="${esc(id)}" data-f="name" value="${esc(st.name)}" class="${rowInp}"></td>
+          <td class="p-2"><input data-id="${esc(id)}" data-f="phone" value="${esc(st.phone || '')}" dir="ltr" class="${rowInp}"></td>
+          <td class="p-2"><input data-id="${esc(id)}" data-f="parentPhone" value="${esc(st.parentPhone || '')}" dir="ltr" class="${rowInp}"></td>
+          <td class="p-2"><input data-id="${esc(id)}" data-f="email" value="${esc(st.email || '')}" dir="ltr" placeholder="name@gmail.com" class="${rowInp}"></td>
+          <td class="p-2"><select data-id="${esc(id)}" data-f="grade" onchange="window.inlineGradeChanged('${esc(id)}')" class="${rowInp}">${gradeOptionsHtml(st.grade)}</select></td>
+          <td class="p-2"><select data-id="${esc(id)}" data-f="group" class="${rowInp}">${groupOptionsHtml(st.grade, st.group)}</select></td>
+          <td class="p-2 whitespace-nowrap">
+            <button onclick="window.saveInlineStudent('${esc(id)}')" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-3 py-1.5 rounded-lg font-black text-[11px] transition">حفظ</button>
+            <button onclick="window.deleteStudent('${esc(id)}')" class="bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white px-2.5 py-1.5 rounded-lg text-[11px] transition"><i class="fa-solid fa-trash"></i></button>
+          </td>`;
+        body.appendChild(tr);
+      });
+    }
+
+    const inlineEl = (id, f) => document.querySelector(`#inlineStudentsBody [data-id="${id}"][data-f="${f}"]`);
+
+    window.inlineGradeChanged = function(id) {
+      const grade = inlineEl(id, 'grade').value;
+      const gsel = inlineEl(id, 'group');
+      gsel.innerHTML = groupOptionsHtml(grade, '');
+      if (!gsel.options.length) gsel.innerHTML = '<option value="">لا توجد مجموعات لهذا الصف</option>';
+    };
+
+    window.saveInlineStudent = async function(id) {
+      const st = studentsData.find(x => x.id === id);
+      if (!st) return;
+      const data = {
+        name: inlineEl(id, 'name').value.trim(),
+        phone: inlineEl(id, 'phone').value.trim(),
+        parentPhone: inlineEl(id, 'parentPhone').value.trim(),
+        email: inlineEl(id, 'email').value.trim().toLowerCase(),
+        grade: inlineEl(id, 'grade').value,
+        group: inlineEl(id, 'group').value
+      };
+      if (!data.name) return alert("اسم الطالب لا يمكن أن يكون فارغاً.");
+      if (!data.group) return alert("اختر مجموعة للطالب.");
+      if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return alert("البريد الإلكتروني غير صحيح.");
+      try {
+        const patch = { ...data };
+        if (!st.uid) patch.uid = await ensureStudentAuth(id);
+        await updateDoc(doc(db, COL.students, sKey(id)), patch);
+        if (data.grade !== st.grade || data.group !== st.group) {
+          for (const r of allRecords.filter(r => r.studentKey === sKey(id))) {
+            await updateDoc(doc(db, COL.records, r.id), { grade: data.grade, group: data.group });
+          }
+        }
+        inlineDirty = false;
+        alert("تم حفظ بيانات الطالب.");
+      } catch (e) { alert("تعذر الحفظ. تحقق من الاتصال وصلاحيات Firestore."); }
+    };
+
+    // ================= استعادة المجموعات المفقودة =================
+    function missingGroups() {
+      const have = new Set(customGroups.map(g => g.name));
+      const m = new Map();
+      studentsData.forEach(st => { if (st.group && !have.has(st.group)) m.set(st.group, st.grade); });
+      return m;
+    }
+    function updateRecoverBox() {
+      const box = $('recoverGroupsBox');
+      if (!box) return;
+      if (!groupsLoaded || !studentsLoaded) return;
+      const m = missingGroups();
+      box.classList.toggle('hidden', m.size === 0);
+      if (m.size) $('recoverGroupsText').textContent = `يوجد ${m.size} مجموعة مسجّل بها طلاب لكنها غير موجودة في قائمة المجموعات: ${Array.from(m.keys()).join(' ، ')}`;
+    }
+    window.recoverGroups = async function() {
+      const m = missingGroups();
+      let i = 0;
+      try {
+        for (const [name, grade] of m) {
+          await setDoc(doc(db, COL.groups, `grp_${Date.now()}_${i++}`), { name, grade });
+        }
+        alert("تمت استعادة المجموعات بنجاح.");
+      } catch (e) { alert("تعذر استعادة المجموعات."); }
+    };
+
+    // ================= تسجيل الاختبار الإلكتروني من قائمة إيميلات (Google Forms) =================
+    window.applyElectronicEmails = async function() {
+      const out = $('emailsResult');
+      if (currentCategory !== 'center') { out.textContent = "هذه الأداة لحصص السنتر فقط."; return; }
+      const lid = activeLessonId();
+      if (!lessonsData.some(l => l.id === lid)) { out.textContent = "احفظ بيانات الحصة أولاً."; return; }
+      const emails = Array.from(new Set(($('emailsPaste').value.toLowerCase().match(/[a-z0-9._%+\-']+@[a-z0-9.\-]+\.[a-z]{2,}/g)) || []));
+      if (!emails.length) { out.textContent = "لم أجد أي بريد إلكتروني في النص الملصوق."; return; }
+      const c = activeCtx();
+      const scope = studentsData.filter(st => st.grade === c.grade && (c.group === 'عام' || st.group === c.group));
+      const byEmail = new Map(scope.filter(s => s.email).map(s => [s.email.toLowerCase(), s]));
+      const matched = [], unmatched = [];
+      emails.forEach(e => { const st = byEmail.get(e); if (st) matched.push(st); else unmatched.push(e); });
+      out.textContent = "جاري التسجيل...";
+      for (const st of matched) await window.updateField(st.id, 'electronic', 'تم');
+      const noEmail = scope.filter(s => !s.email).length;
+      out.textContent = `تم تسجيل ${matched.length} طالب (حصلوا على Coin). غير مطابق: ${unmatched.length}${unmatched.length ? ' (' + unmatched.join(' ، ') + ')' : ''}. طلاب بدون بريد مسجل: ${noEmail}.`;
+    };
+
     window.generateNewId = function() {
       if (editingStudentId) return;
       const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -1023,6 +1205,10 @@
       window.generateNewId();
       ['lesTitle', 'lesHomework', 'lesVideo', 'lesQuiz'].forEach(id => $(id).addEventListener('input', () => { lessonDirty = true; }));
       $('loginPass').addEventListener('keydown', (e) => { if (e.key === 'Enter') window.teacherLogin(); });
+      $('inGroup').addEventListener('change', renderInlineStudents);
+      $('inlineStudentsBody').addEventListener('focusout', () => setTimeout(() => {
+        if (inlineDirty && !$('inlineStudentsBody').contains(document.activeElement)) { inlineDirty = false; renderInlineStudents(); }
+      }, 250));
       onAuthStateChanged(auth, (user) => {
         if (user && !(user.email || '').endsWith('@' + STUDENT_DOMAIN)) {
           $('loginOverlay').classList.add('hidden');
