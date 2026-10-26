@@ -331,7 +331,7 @@
       set("hwBadge", r?.homework ? (r.homework === "لم يسلم" ? "لم يُسلَّم" : `${r.homework} 📚`) : "بانتظار التقييم");
       set("paperBadge", r && String(r.paper ?? "").trim() !== "" ? `${r.paper} 📝` : dash);
       set("elecBadge", r?.electronic === "تم" ? "تم الاختبار 💻" : r?.electronic === "لم يتم" ? "لم يتم" : (quizOk ? "متاح 💻" : "—"));
-      set("elecText", r?.electronic === "تم" ? "تم تسجيل الاختبار" : "الاختبار الإلكتروني");
+      set("elecText", r?.electronic === "تم" ? "تم تسجيل الاختبار ✅" : (student.email ? `ادخل بنفس بريدك: ${student.email}` : "أضف بريدك من الملف الشخصي أولاً"));
       set("dictBadge", r && String(r.dictation ?? "").trim() !== "" ? `${r.dictation} 🎙️` : dash);
       set("behBadge", r?.note ? "📝 ملاحظة من المستر" : "—");
       if (r?.note) set("behNote", r.note);
