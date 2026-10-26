@@ -153,6 +153,14 @@
             <span class="text-slate-400">هاتف ولي الأمر / Parent Phone:</span>
             <span id="pfParent" class="text-slate-900 dark:text-white" dir="ltr">—</span>
           </div>
+          <div class="flex justify-between items-center gap-3 py-2 border-b border-slate-100 dark:border-slate-800/50">
+            <span class="text-slate-400 whitespace-nowrap">البريد الإلكتروني / Email:</span>
+            <div class="flex items-center gap-2 flex-1 justify-end">
+              <input id="pfEmail" type="email" dir="ltr" placeholder="name@gmail.com" class="w-full max-w-[210px] bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-400">
+              <button id="pfEmailSave" type="button" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-3 py-1 rounded-lg font-black text-[11px] transition">حفظ</button>
+            </div>
+          </div>
+          <p id="pfEmailMsg" class="text-[10px] font-bold text-slate-400">اكتب نفس البريد الذي ستدخل به الاختبارات الإلكترونية ليُسجَّل لك الـ Coin.</p>
           <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
             <span class="text-slate-400">اشتراك الأونلاين / Online Plan:</span>
             <span id="pfOnline" class="text-slate-900 dark:text-white">—</span>
@@ -223,7 +231,7 @@
     }
   </script>
   <script type="module">
-    import { requireStudent, stageOf } from "./platform.js";
+    import { requireStudent, stageOf, db, doc, setDoc, COL, sKey } from "./platform.js";
     const set = (id, t) => { document.getElementById(id).textContent = t; };
     (async () => {
       const st = await requireStudent();
@@ -231,6 +239,16 @@
       set("pfName", st.name); set("pfStage", stageOf(st.grade)); set("pfGrade", st.grade); set("pfGroup", st.group);
       set("pfPhone", st.phone || "—"); set("pfParent", st.parentPhone || "—");
       set("pfOnline", st.isPaidOnline ? "مفعل" : "غير مشترك");
+      const emailInput = document.getElementById("pfEmail"), msg = document.getElementById("pfEmailMsg");
+      emailInput.value = st.email || "";
+      document.getElementById("pfEmailSave").addEventListener("click", async () => {
+        const v = emailInput.value.trim().toLowerCase();
+        if (v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { msg.textContent = "البريد الإلكتروني غير صحيح."; msg.className = "text-[10px] font-bold text-rose-500"; return; }
+        try {
+          await setDoc(doc(db, COL.students, sKey(st.id)), { email: v }, { merge: true });
+          msg.textContent = "تم حفظ بريدك الإلكتروني ✅"; msg.className = "text-[10px] font-bold text-emerald-500";
+        } catch (e) { msg.textContent = "تعذر الحفظ، حاول مرة أخرى."; msg.className = "text-[10px] font-bold text-rose-500"; }
+      });
       const d = st.createdAt?.toDate ? st.createdAt.toDate() : null;
       set("pfDate", d ? `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}` : "—");
     })();
