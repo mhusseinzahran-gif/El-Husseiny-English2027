@@ -97,10 +97,47 @@
       </div>
     </div>
 
+    <!-- الاشتراك والدفع -->
+    <div id="subCard" class="bg-white dark:bg-brand-card border-2 border-amber-400/40 rounded-3xl p-6 shadow-xl space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h3 class="text-base font-black text-slate-900 dark:text-white"><i class="fa-solid fa-wallet text-amber-500"></i> الاشتراك والدفع / Subscription</h3>
+        <span id="subStatus" class="text-xs font-black">...</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-5 space-y-2">
+          <h4 class="text-sm font-black text-slate-900 dark:text-white">الاشتراك الشهري / Monthly</h4>
+          <p id="priceMonthly" class="text-2xl font-black text-amber-500">—</p>
+          <p class="text-[11px] text-slate-400">كل حصص الأونلاين لمدة 30 يوماً</p>
+          <button id="btnPayMonthly" type="button" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-4 py-2.5 rounded-xl text-xs font-black transition shadow-sm">اشترك شهرياً</button>
+        </div>
+        <div class="rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-5 space-y-2">
+          <h4 class="text-sm font-black text-slate-900 dark:text-white">الحصة الواحدة / Single Lesson</h4>
+          <p id="priceLesson" class="text-2xl font-black text-amber-500">—</p>
+          <p class="text-[11px] text-slate-400">افتح حصة واحدة فقط: اختر الحصة من الأقسام بالأسفل ثم اضغط "افتح هذه الحصة فقط".</p>
+        </div>
+      </div>
+      <div id="payBox" class="hidden rounded-2xl bg-amber-400/10 border border-amber-400/30 p-5 space-y-3">
+        <h4 id="payTitle" class="text-sm font-black text-slate-900 dark:text-white"></h4>
+        <div id="payForm" class="space-y-3">
+          <p class="text-xs font-bold text-slate-700 dark:text-slate-200">حوّل <b id="payAmount" class="text-amber-600"></b> جنيه إلى محفظة كاش رقم:
+            <b id="payWallet" dir="ltr" class="text-amber-600"></b>
+            <button id="btnCopyWallet" type="button" class="mr-2 bg-white dark:bg-slate-800 border border-amber-400 text-amber-600 dark:text-amber-400 px-2.5 py-1 rounded-lg text-[11px] font-black">نسخ الرقم</button></p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <input id="payFrom" dir="ltr" placeholder="رقم الهاتف الذي حوّلت منه (01xxxxxxxxx)" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400">
+            <input id="payRef" dir="ltr" placeholder="رقم العملية أو آخر 4 أرقام (اختياري)" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400">
+          </div>
+          <button id="btnSendPay" type="button" class="bg-blue-950 hover:bg-blue-900 text-amber-400 px-5 py-2.5 rounded-xl text-xs font-black transition">إرسال طلب التأكيد</button>
+          <p class="text-[11px] text-slate-500 font-bold">⚠️ لا تشارك الرقم السري (PIN) أو كود التحقق مع أي شخص، والتحويل يكون لرقم المحفظة المعروض فقط. يتم التفعيل بعد أن يتأكد المستر من وصول المبلغ.</p>
+        </div>
+        <p id="payMsg" class="text-xs font-bold"></p>
+      </div>
+      <div id="myPayments" class="space-y-2"></div>
+    </div>
+
     <!-- قائمة الحصص والأرشيف الأونلاين -->
     <div class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="text-base font-black text-slate-900 dark:text-white">أرشيف وحصص الأونلاين المتاحة / Lessons Archive</h3>
+        <h3 class="text-base font-black text-slate-900 dark:text-white">الأقسام الدراسية / Study Sections</h3>
         <span id="olCount" class="text-xs font-bold text-slate-400">إجمالي الحصص: 0 حصة</span>
       </div>
 
@@ -138,43 +175,195 @@
     }
   </script>
   <script type="module">
-    import { requireOnline, onlineLessons, esc, logout } from "./platform.js";
+    import { requireOnline, onlineLessons, esc, ytEmbed, safeUrl, getLessonPrivate, getOnlineSettings, submitPayment, myPayments, DEFAULT_WALLET } from "./platform.js";
+    const $ = (id) => document.getElementById(id);
+
+    const STAGES = [
+      { id: "primary", ar: "المرحلة الابتدائية", en: "Primary Stage", icon: "fa-child", tint: "bg-blue-500/10 text-blue-500",
+        grades: [["الصف الأول الابتدائي", "Primary 1"], ["الصف الثاني الابتدائي", "Primary 2"], ["الصف الثالث الابتدائي", "Primary 3"],
+                 ["الصف الرابع الابتدائي", "Primary 4"], ["الصف الخامس الابتدائي", "Primary 5"], ["الصف السادس الابتدائي", "Primary 6"]] },
+      { id: "prep", ar: "المرحلة الإعدادية", en: "Preparatory Stage", icon: "fa-book-open-reader", tint: "bg-indigo-500/10 text-indigo-500",
+        grades: [["الصف الأول الإعدادي", "Preparatory 1"], ["الصف الثاني الإعدادي", "Preparatory 2"], ["الصف الثالث الإعدادي", "Preparatory 3"]] },
+      { id: "secondary", ar: "المرحلة الثانوية", en: "Secondary Stage", icon: "fa-user-graduate", tint: "bg-amber-400/10 text-amber-500",
+        grades: [["الصف الأول الثانوي", "Secondary 1"], ["الصف الثاني الثانوي", "Secondary 2"], ["الصف الثالث الثانوي", "Secondary 3"]] }
+    ];
+    const lessonOrder = (l) => { const m = /^الحصة\s*(\d+)$/.exec(String(l.lessonName || "").trim()); return m ? +m[1] : 1000 + (l.createdAt?.seconds || 0) / 1e10; };
+    const money = (n) => (n ? `${n} جنيه` : "—");
+
     (async () => {
       const o = await requireOnline();
-      const state = document.getElementById("olState");
-      const list = document.getElementById("olList");
+      const view = $("olList");
       if (!/^[a-z0-9]+@students\.elhusseiny\.app$/i.test(o.user.email || "")) {
-        const back = document.getElementById("backLink");
-        back.href = "gateway.html"; back.querySelector("span").textContent = "العودة للبوابة / Back";
+        const b = $("backLink"); b.href = "gateway.html"; b.querySelector("span").textContent = "العودة للبوابة / Back";
       }
-      if (!o.active) {
+      const [settings, lessonsRaw] = await Promise.all([getOnlineSettings(), onlineLessons().catch(() => [])]);
+      const lessons = lessonsRaw.sort((a, b) => lessonOrder(a) - lessonOrder(b));
+      const wallet = settings.wallet || DEFAULT_WALLET, monthlyPrice = settings.monthlyPrice || 0, lessonPrice = settings.lessonPrice || 0;
+      const unlocked = new Set(o.unlocked || []);
+      const canOpen = (l) => o.active || unlocked.has(l.id);
+
+      // ---- حالة الاشتراك ----
+      const state = $("olState"), subStatus = $("subStatus");
+      const untilTxt = o.until ? ` حتى ${new Date(o.until).toLocaleDateString("ar-EG")}` : "";
+      if (o.active) {
+        state.className = "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-black px-3 py-1 rounded-xl mt-1";
+        state.textContent = "الحالة: مشترك ومفعل ✅" + untilTxt;
+        subStatus.className = "text-xs font-black bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-3 py-1 rounded-xl";
+        subStatus.textContent = "مشترك ✅" + untilTxt;
+      } else {
         state.className = "bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[11px] font-black px-3 py-1 rounded-xl mt-1";
-        state.textContent = "الحالة: بانتظار تفعيل الاشتراك ⏳";
-        list.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">سيتم تفعيل حسابك بعد تأكيد الاشتراك. تواصل مع المستر عبر الواتساب.</p>';
-        return;
+        state.textContent = unlocked.size ? `الحالة: غير مشترك | حصص مفتوحة: ${unlocked.size}` : "الحالة: غير مشترك";
+        subStatus.className = "text-xs font-black bg-slate-500/10 text-slate-500 border border-slate-500/20 px-3 py-1 rounded-xl";
+        subStatus.textContent = "غير مشترك";
       }
-      state.className = "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-black px-3 py-1 rounded-xl mt-1";
-      state.textContent = "الحالة: مشترك ومفعل ✅";
-      let lessons = [];
-      try { lessons = await onlineLessons(); } catch (e) {}
-      document.getElementById("olCount").textContent = `إجمالي الحصص: ${lessons.length} حصة`;
-      if (!lessons.length) { list.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">لا توجد حصص أونلاين منشورة حتى الآن.</p>'; return; }
-      const colors = ["bg-blue-500/10 text-blue-500", "bg-indigo-500/10 text-indigo-500", "bg-amber-400/10 text-amber-500"];
-      list.innerHTML = lessons.map((l, i) => `
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 transition gap-4">
-          <div class="flex items-center gap-3.5">
-            <div class="w-12 h-12 rounded-2xl ${colors[i % 3]} flex items-center justify-center font-black text-base">${String(i + 1).padStart(2, "0")}</div>
-            <div>
-              <h4 class="text-sm font-black text-slate-900 dark:text-white">${esc(l.title || l.lessonName)}</h4>
-              <p class="text-[11px] text-slate-400">${esc(l.lessonName)} | متاح ضمن الاشتراك</p>
-            </div>
+      $("olCount").textContent = `إجمالي الحصص: ${lessons.length} حصة`;
+      if (o.isStudent) $("subCard").classList.add("hidden");
+      $("priceMonthly").textContent = money(monthlyPrice);
+      $("priceLesson").textContent = money(lessonPrice);
+
+      // ---- الدفع ----
+      let payCtx = null, payments = [];
+      const planTxt = (p) => (p.plan === "monthly" ? "اشتراك شهري" : `حصة: ${esc(p.lessonTitle || "")}`);
+      async function loadPayments() {
+        try { payments = await myPayments(o.user); } catch (e) { payments = []; }
+        const label = { pending: ["قيد المراجعة ⏳", "text-amber-500"], approved: ["تم التأكيد ✅", "text-emerald-500"], rejected: ["مرفوض ❌", "text-rose-500"] };
+        $("myPayments").innerHTML = payments.length ? `<h4 class="text-xs font-black text-slate-500 pt-2">طلباتي السابقة</h4>` + payments.slice(0, 6).map((p) =>
+          `<div class="flex flex-wrap justify-between gap-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-[11px] font-bold"><span>${planTxt(p)} | ${esc(p.amount)} جنيه</span><span class="${(label[p.status] || label.pending)[1]}">${(label[p.status] || label.pending)[0]}</span></div>`).join("") : "";
+      }
+      function openPay(plan, lesson) {
+        const amount = plan === "monthly" ? monthlyPrice : lessonPrice;
+        const msg = $("payMsg");
+        $("payBox").classList.remove("hidden");
+        if (!amount) { $("payTitle").textContent = "الدفع"; msg.className = "text-xs font-bold text-rose-500"; msg.textContent = "لم يحدد المستر السعر بعد. تواصل معه عبر الواتساب."; $("payForm").classList.add("hidden"); $("subCard").scrollIntoView({ behavior: "smooth" }); return; }
+        if (payments.some((p) => p.status === "pending" && p.plan === plan && (plan === "monthly" || p.lessonId === lesson.id))) {
+          $("payTitle").textContent = "طلبك قيد المراجعة"; msg.className = "text-xs font-bold text-amber-600"; msg.textContent = "لديك طلب مماثل قيد المراجعة بالفعل. سيتم التفعيل بعد تأكيد المستر استلام المبلغ.";
+          $("payForm").classList.add("hidden"); $("subCard").scrollIntoView({ behavior: "smooth" }); return;
+        }
+        payCtx = { plan, lessonId: lesson ? lesson.id : "", lessonTitle: lesson ? (lesson.title || lesson.lessonName) : "", amount };
+        $("payForm").classList.remove("hidden");
+        $("payTitle").textContent = plan === "monthly" ? "اشتراك شهري (30 يوماً)" : `فتح الحصة: ${payCtx.lessonTitle}`;
+        $("payAmount").textContent = amount; $("payWallet").textContent = wallet;
+        msg.className = "text-xs font-bold"; msg.textContent = "";
+        $("subCard").scrollIntoView({ behavior: "smooth" });
+      }
+      $("btnPayMonthly").addEventListener("click", () => openPay("monthly"));
+      $("btnCopyWallet").addEventListener("click", () => { navigator.clipboard.writeText(wallet).then(() => { $("btnCopyWallet").textContent = "تم النسخ ✓"; setTimeout(() => { $("btnCopyWallet").textContent = "نسخ الرقم"; }, 1500); }); });
+      $("btnSendPay").addEventListener("click", async () => {
+        const from = $("payFrom").value.trim(), ref = $("payRef").value.trim(), msg = $("payMsg");
+        if (!payCtx) return;
+        if (!/^01\d{9}$/.test(from)) { msg.className = "text-xs font-bold text-rose-500"; msg.textContent = "اكتب رقم الهاتف الذي حوّلت منه (11 رقماً يبدأ بـ 01)."; return; }
+        try {
+          await submitPayment(o.user, { name: o.name, ...payCtx, fromPhone: from, ref });
+          msg.className = "text-xs font-bold text-emerald-500"; msg.textContent = "تم إرسال طلبك ✅ سيتم التفعيل بعد أن يتأكد المستر من وصول المبلغ، ثم حدّث الصفحة.";
+          $("payFrom").value = ""; $("payRef").value = ""; payCtx = null; $("payForm").classList.add("hidden");
+          await loadPayments();
+        } catch (e) { msg.className = "text-xs font-bold text-rose-500"; msg.textContent = "تعذر إرسال الطلب، حاول مرة أخرى."; }
+      });
+      loadPayments();
+
+      // ---- التنقل: مرحلة ← صف ← حصص ← تفاصيل الحصة ----
+      const path = { stage: null, grade: null, lesson: null };
+      const lessonsOf = (grade) => lessons.filter((l) => l.grade === grade);
+      const stageCount = (st) => st.grades.reduce((n, g) => n + lessonsOf(g[0]).length, 0);
+      const back = (label) => `<button data-go="back" class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-xl text-xs font-black transition"><i class="fa-solid fa-arrow-right"></i> ${label}</button>`;
+      const crumb = (parts) => `<div class="flex flex-wrap items-center gap-2 text-[11px] font-bold text-slate-400">${parts.join('<i class="fa-solid fa-angle-left text-[9px]"></i>')}</div>`;
+
+      function linkCard(icon, tint, title, en, url, btnText) {
+        return `<div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col justify-between gap-3">
+          <div class="flex items-center gap-3"><div class="w-12 h-12 rounded-2xl ${tint} flex items-center justify-center text-xl"><i class="fa-solid ${icon}"></i></div>
+          <div><h4 class="text-sm font-black text-slate-900 dark:text-white">${title}</h4><p class="text-[11px] text-slate-400">${en}</p></div></div>
+          ${url ? `<a href="${esc(url)}" target="_blank" rel="noopener" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-4 py-2.5 rounded-xl text-xs font-black text-center transition shadow-sm">${btnText}</a>`
+                : `<span class="bg-slate-200 dark:bg-slate-800 text-slate-400 px-4 py-2.5 rounded-xl text-xs font-black text-center">لم يُرفع بعد</span>`}</div>`;
+      }
+
+      async function renderLesson(l, st) {
+        const head = `<div class="flex flex-wrap items-center justify-between gap-3">${crumb([`<span>${st.ar}</span>`, `<span>${esc(path.grade)}</span>`, `<span class="text-amber-500">${esc(l.lessonName)}</span>`])}${back("رجوع للحصص / Back")}</div>
+          <h3 class="text-lg font-black text-slate-900 dark:text-white">${esc(l.title || l.lessonName)}</h3>`;
+        view.innerHTML = head + `<p class="text-xs text-slate-400 font-bold py-6 text-center">جاري تحميل الحصة...</p>`;
+        let c = null, denied = !canOpen(l);
+        if (!denied) { try { c = await getLessonPrivate(l.id); } catch (e) { denied = true; } }
+        if (path.lesson !== l.id) return;
+        if (denied) {
+          view.innerHTML = head + `<div class="rounded-2xl bg-amber-400/10 border border-amber-400/30 p-6 space-y-4 text-center">
+            <i class="fa-solid fa-lock text-3xl text-amber-500"></i>
+            <p class="text-sm font-black text-slate-900 dark:text-white">هذه الحصة للمشتركين</p>
+            <p class="text-xs text-slate-500">اشترك شهرياً لفتح كل الحصص، أو افتح هذه الحصة فقط.</p>
+            <div class="flex flex-wrap justify-center gap-3">
+              <button data-pay="monthly" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-5 py-2.5 rounded-xl text-xs font-black transition">اشترك شهرياً (${money(monthlyPrice)})</button>
+              <button data-pay="lesson" class="bg-white dark:bg-slate-800 border border-amber-400 text-amber-600 dark:text-amber-400 px-5 py-2.5 rounded-xl text-xs font-black transition">افتح هذه الحصة فقط (${money(lessonPrice)})</button>
+            </div></div>`;
+          return;
+        }
+        c = c || {};
+        const embed = ytEmbed(c.video), vurl = safeUrl(c.video);
+        view.innerHTML = head + `${c.homework ? `<p class="text-xs font-bold text-slate-500 dark:text-slate-300 bg-amber-400/10 border border-amber-400/20 rounded-xl px-3 py-2">📚 الواجب المطلوب: ${esc(c.homework)}</p>` : ""}
+          <div class="relative w-full aspect-video rounded-2xl bg-slate-900 border border-slate-700 overflow-hidden flex items-center justify-center">
+            ${embed ? `<iframe class="absolute inset-0 w-full h-full" src="${esc(embed)}" title="Lesson video" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`
+              : vurl ? `<a href="${esc(vurl)}" target="_blank" rel="noopener" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-6 py-3 rounded-2xl font-black text-sm shadow-xl">فتح فيديو الشرح <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i></a>`
+              : `<span class="text-slate-300 text-sm font-bold">لم يتم رفع فيديو لهذه الحصة بعد</span>`}
           </div>
-          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <a href="lesson-view.html?cat=online&id=${encodeURIComponent(l.id)}" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-4 py-2 rounded-xl text-xs font-black transition shadow-sm">دخول الحصة</a>
-          </div>
-        </div>`).join("");
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${linkCard("fa-laptop-code", "bg-amber-500/10 text-amber-500", "الاختبار الإلكتروني", "Electronic Test", safeUrl(c.quiz), "ابدأ الاختبار")}
+            ${linkCard("fa-file-pdf", "bg-rose-500/10 text-rose-500", "مذكرة الحصة PDF", "Lesson Notes (PDF)", safeUrl(c.pdf), "فتح / تحميل المذكرة")}
+          </div>`;
+      }
+
+      function render() {
+        if (!path.stage) {
+          view.innerHTML = `<p class="text-xs text-slate-400 font-bold">اختر المرحلة الدراسية للبدء / Choose your stage</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">${STAGES.map((st) => `
+              <button data-go="stage:${st.id}" class="group bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-amber-400 rounded-3xl p-6 text-center space-y-3 transition hover:-translate-y-1 shadow">
+                <div class="w-16 h-16 mx-auto rounded-2xl ${st.tint} flex items-center justify-center text-3xl group-hover:scale-110 transition"><i class="fa-solid ${st.icon}"></i></div>
+                <h4 class="text-base font-black text-slate-900 dark:text-white">${st.ar}</h4>
+                <p class="text-xs font-bold text-slate-400">${st.en}</p>
+                <span class="inline-block text-[11px] font-black bg-amber-400/10 text-amber-500 border border-amber-400/20 px-3 py-1 rounded-xl">${stageCount(st)} حصة</span>
+              </button>`).join("")}</div>`;
+          return;
+        }
+        const st = STAGES.find((s) => s.id === path.stage);
+        if (!path.grade) {
+          view.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-3">${crumb([`<span>الأقسام</span>`, `<span class="text-amber-500">${st.ar} / ${st.en}</span>`])}${back("رجوع / Back")}</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">${st.grades.map(([ar, en], i) => `
+              <button data-go="grade:${esc(ar)}" class="group bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-amber-400 rounded-2xl p-5 flex items-center gap-4 text-right transition hover:-translate-y-1">
+                <div class="w-14 h-14 rounded-2xl ${st.tint} flex items-center justify-center font-black text-lg flex-shrink-0">${i + 1}</div>
+                <div class="min-w-0"><h4 class="text-sm font-black text-slate-900 dark:text-white">${ar}</h4><p class="text-[11px] text-slate-400">${en}</p>
+                <span class="text-[11px] font-black text-amber-500">${lessonsOf(ar).length} حصة</span></div></button>`).join("")}</div>`;
+          return;
+        }
+        const gradeEn = (st.grades.find((g) => g[0] === path.grade) || ["", ""])[1];
+        const gl = lessonsOf(path.grade);
+        if (!path.lesson) {
+          view.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-3">${crumb([`<span>الأقسام</span>`, `<span>${st.ar}</span>`, `<span class="text-amber-500">${esc(path.grade)} / ${gradeEn}</span>`])}${back("رجوع / Back")}</div>
+            ${gl.length ? `<div class="space-y-3">${gl.map((l, i) => `
+              <button data-go="lesson:${esc(l.id)}" class="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-400 transition gap-4 text-right">
+                <div class="flex items-center gap-3.5"><div class="w-12 h-12 rounded-2xl ${st.tint} flex items-center justify-center font-black text-base">${String(i + 1).padStart(2, "0")}</div>
+                <div><h4 class="text-sm font-black text-slate-900 dark:text-white">${esc(l.title || l.lessonName)}</h4><p class="text-[11px] text-slate-400">${esc(l.lessonName)}</p></div></div>
+                ${canOpen(l) ? `<span class="bg-amber-400 text-blue-950 px-4 py-2 rounded-xl text-xs font-black">دخول الحصة <i class="fa-solid fa-arrow-left mr-1"></i></span>`
+                             : `<span class="bg-slate-200 dark:bg-slate-800 text-slate-500 px-4 py-2 rounded-xl text-xs font-black"><i class="fa-solid fa-lock mr-1"></i> مقفلة</span>`}
+              </button>`).join("")}</div>` : `<p class="text-xs text-slate-400 text-center py-6">لا توجد حصص منشورة لهذا الصف حتى الآن.</p>`}`;
+          return;
+        }
+        const l = gl.find((x) => x.id === path.lesson);
+        if (!l) { path.lesson = null; return render(); }
+        renderLesson(l, st);
+      }
+
+      view.addEventListener("click", (e) => {
+        const pay = e.target.closest("[data-pay]");
+        if (pay) { const l = lessons.find((x) => x.id === path.lesson); openPay(pay.dataset.pay, l); return; }
+        const b = e.target.closest("[data-go]");
+        if (!b) return;
+        const [kind, ...rest] = b.dataset.go.split(":");
+        const val = rest.join(":");
+        if (kind === "stage") { path.stage = val; path.grade = null; path.lesson = null; }
+        else if (kind === "grade") { path.grade = val; path.lesson = null; }
+        else if (kind === "lesson") { path.lesson = val; }
+        else if (kind === "back") { if (path.lesson) path.lesson = null; else if (path.grade) path.grade = null; else path.stage = null; }
+        render();
+        view.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      render();
     })();
-  
   </script>
 </body>
 </html>
