@@ -1,13 +1,13 @@
 // منصة El Husseiny English - الملف المشترك لكل الصفحات (Firebase)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
 
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence, browserSessionPersistence, collection, doc, getDoc, getDocs, setDoc, query, where };
+export { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence, browserSessionPersistence, collection, doc, getDoc, getDocs, setDoc, addDoc, serverTimestamp, query, where };
 
 // ===== أسماء المجموعات في قاعدة البيانات =====
 export const COL = {
@@ -15,8 +15,13 @@ export const COL = {
   groups: "platform_groups",
   lessons: "platform_lessons",
   records: "platform_records",
-  online: "platform_online"
+  online: "platform_online",
+  lessonsPrivate: "platform_lessons_private",
+  payments: "platform_payments",
+  settings: "platform_settings",
+  visitor: "platform_visitor"
 };
+export const DEFAULT_WALLET = "01011987141";
 
 // ===== نظام الـ Coins (عدّل القيم من هنا فقط) =====
 export const COIN_RULES = { attendance: 1, homework: 1, dictation: 1, paper: 1, electronic: 1 };
@@ -118,7 +123,7 @@ export async function onlineSignup(email, pass, name) {
   await setDoc(doc(db, COL.online, cred.user.uid), { email, name: name || "", active: false, createdAt: new Date() });
   return cred.user;
 }
-// يعيد { user, active } أو يحوّل للبوابة. الطالب المسجل بالسنتر مع اشتراك أونلاين يُقبل أيضاً.
+// يعيد { user, active, unlocked, until } أو يحوّل للبوابة. الطالب المسجل بالسنتر مع اشتراك أونلاين يُقبل أيضاً.
 export async function requireOnline() {
   const user = await authReady();
   if (!user) { location.replace("gateway.html"); return new Promise(() => {}); }
@@ -126,10 +131,13 @@ export async function requireOnline() {
     if (isStudentUser(user)) {
       const s = await getDoc(doc(db, COL.students, user.email.split("@")[0]));
       const d = s.exists() ? s.data() : null;
-      return { user, active: !!(d && d.isPaidOnline && !d.isBanned), name: d?.name || "", grade: d?.grade || "" };
+      return { user, isStudent: true, active: !!(d && d.isPaidOnline && !d.isBanned), unlocked: [], until: null, name: d?.name || "", grade: d?.grade || "" };
     }
     const o = await getDoc(doc(db, COL.online, user.uid));
-    return { user, active: !!(o.exists() && o.data().active), name: o.exists() ? (o.data().name || "") : "", grade: "" };
+    const d = o.exists() ? o.data() : null;
+    const until = d?.activeUntil?.toMillis ? d.activeUntil.toMillis() : null;
+    const sub = !!(d && d.active && (!until || until > Date.now()));
+    return { user, isStudent: false, active: sub, unlocked: Array.isArray(d?.unlocked) ? d.unlocked : [], until, name: d?.name || "", grade: "" };
   } catch (e) { location.replace("gateway.html"); return new Promise(() => {}); }
 }
 export async function onlineLessons() {
@@ -137,3 +145,32 @@ export async function onlineLessons() {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }))
     .sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
 }
+
+// ===== إعدادات الدفع والمحتوى الخاص بالحصص والزوار =====
+export async function getOnlineSettings() {
+  try { const s = await getDoc(doc(db, COL.settings, "online")); return s.exists() ? s.data() : {}; } catch (e) { return {}; }
+}
+export async function getLessonPrivate(lid) {            // يرمي permission-denied لو الطالب غير مشترك
+  const s = await getDoc(doc(db, COL.lessonsPrivate, lid));
+  return s.exists() ? s.data() : null;
+}
+export async function submitPayment(user, d) {
+  return addDoc(collection(db, COL.payments), {
+    uid: user.uid, email: user.email || "", name: d.name || "", plan: d.plan,
+    lessonId: d.lessonId || "", lessonTitle: d.lessonTitle || "", amount: Number(d.amount) || 0,
+    fromPhone: d.fromPhone, ref: d.ref || "", status: "pending", createdAt: serverTimestamp()
+  });
+}
+export async function myPayments(user) {
+  const snap = await getDocs(query(collection(db, COL.payments), where("uid", "==", user.uid)));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+}
+export async function visitorItems() {
+  const snap = await getDocs(collection(db, COL.visitor));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+}
+export const safeUrl = (u) => (/^https?:\/\//i.test(String(u || "").trim()) ? String(u).trim() : "");
+export const driveImage = (u) => {
+  const m = String(u || "").match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]+)/);
+  return m ? `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1200` : u;
+};
