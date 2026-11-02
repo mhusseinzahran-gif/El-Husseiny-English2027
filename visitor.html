@@ -235,6 +235,48 @@
             border: 1px dashed var(--border-color);
             font-size: 13px;
         }
+        /* الشريط المتحرك للجمل التحفيزية */
+        .ticker {
+            background: linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b);
+            color: #0b132b;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+        }
+        .ticker-badge {
+            background: rgba(11, 19, 43, 0.9);
+            color: #fbbf24;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+        #tickerText {
+            font-weight: 800;
+            font-size: 16px;
+            text-align: center;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .v-section { margin-bottom: 40px; }
+        .v-title { color: #60a5fa; font-size: 19px; display: flex; align-items: center; gap: 10px; margin: 0 0 4px; }
+        .v-sub { color: var(--text-secondary); font-size: 12px; margin: 0 0 16px; }
+        .v-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .v-card { background-color: var(--card-bg); padding: 18px; border-radius: 12px; border: 1px solid var(--border-color); transition: 0.3s; display: flex; flex-direction: column; gap: 10px; }
+        .v-card:hover { box-shadow: 0 10px 20px rgba(0,0,0,0.15); border-color: #60a5fa; transform: translateY(-3px); }
+        .v-card h4 { margin: 0; font-size: 15px; color: var(--text-color); }
+        .v-card p { margin: 0; font-size: 13px; color: var(--text-secondary); }
+        .video-box { position: relative; padding-top: 56.25%; border-radius: 8px; overflow: hidden; background: #000; }
+        .video-box iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+        .v-img { width: 100%; height: 190px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); }
+        .v-btn { display: inline-block; background: var(--accent-color); color: #fff; padding: 9px 16px; border-radius: 6px; font-weight: bold; font-size: 13px; text-decoration: none; text-align: center; }
+        .v-btn:hover { opacity: 0.9; }
+        .v-empty { border: 1px dashed var(--border-color); border-radius: 12px; padding: 26px; text-align: center; color: var(--text-secondary); font-size: 13px; }
+        .v-icon { font-size: 34px; }
         footer {
             text-align: center;
             padding: 30px;
@@ -279,43 +321,15 @@
         <button class="btn btn-share" onclick="sharePlatform()" id="shareBtn">نشر المنصة / Share</button>
     </div>
 
-    <!-- محتوى صفحة الزائر -->
+    <!-- الشريط المتحرك: جمل تحفيزية (من لوحة المعلم) -->
+    <div class="ticker">
+        <span class="ticker-badge">💡 رسالة اليوم</span>
+        <span id="tickerText">مرحباً بك في منصة El Husseiny English 🌟</span>
+    </div>
+
+    <!-- محتوى صفحة الزوار (يُدار من لوحة المعلم) -->
     <div class="container">
-        <div class="content-grid">
-
-            <!-- قسم الفيديوهات التجريبية -->
-            <div class="content-card">
-                <div class="card-icon">▶️</div>
-                <h3 id="vidHeader">فيديوهات الشرح التجريبية / Preview Videos</h3>
-                <div class="media-placeholder">مكان عرض فيديو الشرح (Video Preview)</div>
-                <p>شاهد نماذج لأسلوب الشرح. الفيديوهات الكاملة تتطلب اشتراك أو تسجيل دخول.</p>
-            </div>
-
-            <!-- قسم ملفات الـ PDF والملازم -->
-            <div class="content-card">
-                <div class="card-icon">📄</div>
-                <h3 id="pdfHeader">الملفات والملازم الاسترشادية / Study Materials & PDFs</h3>
-                <div class="media-placeholder">معاينة ملف PDF / ملزمة الشرح</div>
-                <p>يمكنك الاطلاع على نماذج من المذكرات والتدريبات الخاصة بالمناهج.</p>
-            </div>
-
-             <!-- قسم الصور التوضيحية -->
-             <div class="content-card">
-                <div class="card-icon">🖼️</div>
-                <h3 id="photoHeader">المعرض والصور التوضيحية / Photo Gallery</h3>
-                <div class="media-placeholder">لقطات من المناهج والأنشطة</div>
-                <p>صور توضيحية لتبسيط هيكل الحصص والأنشطة المدرسية.</p>
-            </div>
-
-            <!-- قسم النصوص الإرشادية -->
-            <div class="content-card">
-                <div class="card-icon">📝</div>
-                <h3 id="noteHeader">توجيهات وإعلانات هامة / Instructions & Notes</h3>
-                <div class="media-placeholder">منطقة نصوص إرشادية</div>
-                <p>أهم المواعيد، الإعلانات الخاصة، وشروط الانضمام لمنصة El Husseiny English.</p>
-            </div>
-
-        </div>
+        <div id="visitorRoot"><div class="v-empty">جاري تحميل المحتوى...</div></div>
     </div>
 
     <footer>
@@ -351,6 +365,72 @@
                 alert('تم نسخ رابط المنصة بنجاح! / Link copied successfully!');
             }
         }
+    </script>
+    <script type="module">
+        import { visitorItems, ytEmbed, safeUrl, driveImage, esc } from "./platform.js";
+
+        const DEFAULT_PHRASES = [
+            "أحسنت يا بطل! استمر في التقدم نحو القمة 🌟",
+            "التميز ليس مقصداً، بل هو أسلوب حياة 💪",
+            "كل كلمة جديدة تحفظها اليوم تقربك من هدفك الكبير 📚",
+            "ابدأ الآن، فالنجاح يبدأ بخطوة واحدة 🚀",
+            "مجهودك اليوم هو أساس تفوقك غداً مع مستر محمد الحسيني 🎓"
+        ];
+
+        (async () => {
+            let items = [];
+            try { items = await visitorItems(); } catch (e) {}
+            const by = (t) => items.filter((i) => i.type === t);
+
+            // الشريط المتحرك
+            const phrases = by("phrase").map((i) => i.title).filter(Boolean);
+            const list = phrases.length ? phrases : DEFAULT_PHRASES;
+            const el = document.getElementById("tickerText");
+            let k = 0;
+            el.textContent = list[0];
+            if (list.length > 1) {
+                setInterval(() => {
+                    el.style.opacity = 0; el.style.transform = "translateY(8px)";
+                    setTimeout(() => { k = (k + 1) % list.length; el.textContent = list[k]; el.style.opacity = 1; el.style.transform = "none"; }, 450);
+                }, 5000);
+            }
+
+            const section = (icon, ar, en, sub, inner, empty) => `
+                <div class="v-section">
+                    <h3 class="v-title"><span>${icon}</span> ${ar} / ${en}</h3>
+                    <p class="v-sub">${sub}</p>
+                    ${inner ? `<div class="v-grid">${inner}</div>` : `<div class="v-empty">${empty}</div>`}
+                </div>`;
+
+            const videos = by("video").map((v) => {
+                const e = ytEmbed(v.url), u = safeUrl(v.url);
+                return `<div class="v-card">
+                    ${e ? `<div class="video-box"><iframe src="${esc(e)}" title="${esc(v.title)}" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`
+                        : (u ? `<a class="v-btn" href="${esc(u)}" target="_blank" rel="noopener">▶️ مشاهدة الفيديو</a>` : "")}
+                    <h4>${esc(v.title)}</h4>${v.desc ? `<p>${esc(v.desc)}</p>` : ""}</div>`;
+            }).join("");
+
+            const images = by("image").map((v) => {
+                const u = safeUrl(v.url); if (!u) return "";
+                const src = driveImage(u);
+                return `<div class="v-card"><a href="${esc(u)}" target="_blank" rel="noopener"><img class="v-img" loading="lazy" src="${esc(src)}" alt="${esc(v.title)}"></a>
+                    <h4>${esc(v.title)}</h4>${v.desc ? `<p>${esc(v.desc)}</p>` : ""}</div>`;
+            }).join("");
+
+            const pdfs = by("pdf").map((v) => {
+                const u = safeUrl(v.url); if (!u) return "";
+                return `<div class="v-card"><div class="v-icon">📄</div><h4>${esc(v.title)}</h4>${v.desc ? `<p>${esc(v.desc)}</p>` : ""}
+                    <a class="v-btn" href="${esc(u)}" target="_blank" rel="noopener">فتح / تحميل المذكرة</a></div>`;
+            }).join("");
+
+            const notes = by("note").map((v) => `<div class="v-card"><div class="v-icon">📝</div><h4>${esc(v.title)}</h4>${v.desc ? `<p>${esc(v.desc)}</p>` : ""}</div>`).join("");
+
+            document.getElementById("visitorRoot").innerHTML =
+                section("▶️", "فيديوهات الشرح التجريبية", "Preview Videos", "شاهد نماذج لأسلوب الشرح. الفيديوهات الكاملة تتطلب اشتراك أو تسجيل دخول.", videos, "سيتم إضافة فيديوهات تجريبية قريباً.") +
+                section("🖼️", "المعرض والصور التوضيحية", "Photo Gallery", "لقطات من المناهج والأنشطة.", images, "سيتم إضافة الصور قريباً.") +
+                section("📄", "الملفات والملازم الاسترشادية", "Study Materials & PDFs", "نماذج من المذكرات والتدريبات الخاصة بالمناهج.", pdfs, "سيتم إضافة المذكرات قريباً.") +
+                section("📢", "توجيهات وإعلانات هامة", "Instructions & Notes", "أهم المواعيد والإعلانات وشروط الانضمام لمنصة El Husseiny English.", notes, "لا توجد إعلانات حالياً.");
+        })();
     </script>
 </body>
 </html>
