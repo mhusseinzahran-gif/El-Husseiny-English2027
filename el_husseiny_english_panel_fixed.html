@@ -299,6 +299,16 @@
           </div>
         </div>
 
+        <div id="onlineManager" class="hidden bg-slate-900 border border-slate-700 rounded-2xl p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h4 class="text-xs font-black text-white"><i class="fa-solid fa-list-ol text-amber-400"></i> حصص الأونلاين للصف المختار: <span id="onlineManagerCount">0</span> / 50</h4>
+            <button type="button" onclick="addOnlineLesson()" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-3 py-1.5 rounded-xl font-black text-[11px] transition">+ إضافة حصة جديدة</button>
+          </div>
+          <p class="text-[11px] text-slate-400">الأخضر = حصة محفوظة (اضغط للتعديل، و× للحذف). الرمادي = خانة فارغة (اضغط لإضافة حصة بهذا الرقم، ثم املأ البيانات واضغط حفظ).</p>
+          <div id="onlineManagerGrid" class="grid grid-cols-5 sm:grid-cols-10 gap-2"></div>
+          <div id="onlineManagerOthers" class="flex flex-wrap gap-2"></div>
+        </div>
+
         <div class="bg-slate-50 dark:bg-slate-900/80 p-5 rounded-2xl border border-slate-700 space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
@@ -320,6 +330,11 @@
               <label class="text-xs font-bold text-slate-300">رابط الاختبار الإلكتروني:</label>
               <input type="text" id="lesQuiz" placeholder="رابط الاختبار..." class="w-full bg-white dark:bg-slate-800 border border-slate-700 px-3 py-2.5 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-amber-400" dir="ltr">
             </div>
+          </div>
+
+          <div class="space-y-2 pt-2">
+            <label class="text-xs font-bold text-slate-300">رابط مذكرة الحصة PDF (Google Drive أو أي رابط تحميل):</label>
+            <input type="text" id="lesPdf" placeholder="https://drive.google.com/..." class="w-full bg-white dark:bg-slate-800 border border-slate-700 px-3 py-2.5 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-amber-400" dir="ltr">
           </div>
 
           <div class="flex justify-between items-center gap-3 pt-4 border-t border-slate-700">
@@ -450,6 +465,40 @@
       <p class="text-xs text-slate-400">الطالب ينشئ حسابه بالإيميل من البوابة، ولا يرى حصص الأونلاين إلا بعد تفعيل اشتراكه من هنا.</p>
       <div id="onlineAccountsContainer" class="space-y-3"></div>
     </div>
+    <!-- محتوى صفحة الزوار -->
+    <div id="visitorAdmin" class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl space-y-4">
+      <h3 class="text-base font-black text-white flex items-center gap-2">
+        <i class="fa-solid fa-door-open text-amber-500"></i> 6. محتوى صفحة الزوار (فيديوهات - صور - مذكرات PDF - جمل تحفيزية)
+      </h3>
+      <p class="text-xs text-slate-400">كل ما تضيفه هنا يظهر فوراً في صفحة الزوار. الصور والمذكرات بروابط (Google Drive بوضع "أي شخص لديه الرابط" أو أي رابط مباشر)، والفيديو رابط يوتيوب.</p>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <select id="vType" onchange="vTypeChanged()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400">
+          <option value="video">فيديو</option><option value="image">صورة</option><option value="pdf">مذكرة PDF</option>
+          <option value="phrase">جملة تحفيزية (الشريط المتحرك)</option><option value="note">إعلان / نص</option>
+        </select>
+        <input id="vTitle" placeholder="العنوان" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400">
+        <input id="vUrl" dir="ltr" placeholder="الرابط https://..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400">
+        <input id="vDesc" placeholder="وصف مختصر (اختياري)" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400">
+      </div>
+      <button type="button" onclick="addVisitorItem()" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-5 py-2.5 rounded-xl font-black text-xs transition shadow-md">+ إضافة لصفحة الزوار</button>
+      <div id="visitorAdminList" class="space-y-2"></div>
+    </div>
+
+    <!-- الاشتراك والدفع -->
+    <div id="paymentsAdmin" class="bg-white dark:bg-brand-card border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-xl space-y-4">
+      <h3 class="text-base font-black text-white flex items-center gap-2">
+        <i class="fa-solid fa-wallet text-amber-500"></i> 7. الاشتراك والدفع (محفظة كاش)
+        <span id="paymentsBadge" class="hidden bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-lg"></span>
+      </h3>
+      <p class="text-xs text-slate-400">الطالب يحوّل المبلغ لرقم محفظتك ثم يرسل طلب دفع من صفحة الأونلاين. المنصة لا تعرف التحويل تلقائياً: <b class="text-amber-400">تأكد من وصول المبلغ في تطبيق المحفظة قبل الضغط على "تأكيد"</b> (لا تعتمد على صورة إيصال وحدها).</p>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <input id="setMonthly" type="number" min="0" placeholder="سعر الاشتراك الشهري (جنيه)" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400">
+        <input id="setLesson" type="number" min="0" placeholder="سعر الحصة الواحدة (جنيه)" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400">
+        <input id="setWallet" dir="ltr" placeholder="رقم المحفظة" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400">
+        <button type="button" onclick="saveOnlineSettings()" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-4 py-2.5 rounded-xl font-black text-xs transition shadow-md">حفظ الأسعار والرقم</button>
+      </div>
+      <div id="paymentsContainer" class="space-y-3"></div>
+    </div>
   </main>
 
   <footer class="w-full text-center py-6 text-[11px] text-slate-400 font-bold">
@@ -459,11 +508,11 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword as _secSignIn, signOut as _secSignOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { onSnapshot, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { onSnapshot, updateDoc, deleteDoc, serverTimestamp, arrayUnion, Timestamp, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { firebaseConfig } from "./firebase-config.js";
     import { auth, db, COL, STUDENT_DOMAIN, sKey, studentEmail, studentPass, lessonId, totalCoins, esc,
              signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged,
-             collection, doc, setDoc, getDocs, query, where } from "./platform.js";
+             collection, doc, setDoc, getDocs, query, where, DEFAULT_WALLET, safeUrl } from "./platform.js";
 
     // تطبيق ثانوي لإنشاء حسابات دخول الطلاب بدون تسجيل خروج المعلم
     const secAuth = getAuth(initializeApp(firebaseConfig, "secondary"));
@@ -480,6 +529,7 @@
     let lessonDirty = false;
     let fetchTimer = null;
     let groupsLoaded = false, studentsLoaded = false, inlineDirty = false;
+    let privateData = {}, visitorList = [], paymentsList = [], onlineSettings = {};
 
     const $ = (id) => document.getElementById(id);
     const byName = (a, b) => String(a.name).localeCompare(String(b.name), 'ar');
@@ -541,6 +591,28 @@
         refreshLessonSuggestions();
         if (!lessonDirty) fillLessonFields();
         loadAttendanceTable();
+        renderOnlineManager();
+      }, onErr));
+
+      unsubs.push(onSnapshot(collection(db, COL.lessonsPrivate), (snap) => {
+        privateData = {};
+        snap.docs.forEach(d => { privateData[d.id] = d.data(); });
+        if (!lessonDirty) fillLessonFields();
+      }, onErr));
+
+      unsubs.push(onSnapshot(collection(db, COL.visitor), (snap) => {
+        visitorList = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+        renderVisitorAdmin();
+      }, onErr));
+
+      unsubs.push(onSnapshot(collection(db, COL.payments), (snap) => {
+        paymentsList = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        renderPayments();
+      }, onErr));
+
+      unsubs.push(onSnapshot(doc(db, COL.settings, 'online'), (snap) => {
+        onlineSettings = snap.exists() ? snap.data() : {};
+        fillSettingsForm();
       }, onErr));
 
       unsubs.push(onSnapshot(collection(db, COL.records), (snap) => {
@@ -682,11 +754,14 @@
     }
 
     function fillLessonFields() {
-      const l = lessonsData.find(x => x.id === activeLessonId());
-      $('lesTitle').value = l?.title || "";
-      $('lesHomework').value = l?.homework || "";
-      $('lesVideo').value = l?.video || "";
-      $('lesQuiz').value = l?.quiz || "";
+      const id = activeLessonId();
+      const l = lessonsData.find(x => x.id === id);
+      const src = l ? (l.category === 'online' ? { ...l, ...(privateData[id] || {}) } : l) : null;
+      $('lesTitle').value = src?.title || "";
+      $('lesHomework').value = src?.homework || "";
+      $('lesVideo').value = src?.video || "";
+      $('lesQuiz').value = src?.quiz || "";
+      $('lesPdf').value = src?.pdf || "";
     }
 
     window.onGradeChangeFetch = function() {
@@ -695,12 +770,19 @@
     };
 
     window.switchCategory = function(cat) {
+      if (cat === 'visitors') {
+        alert('محتوى صفحة الزوار يُدار من قسم "6. محتوى صفحة الزوار" أسفل الصفحة.');
+        const v = $('visitorAdmin'); if (v) v.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
       currentCategory = cat;
+      if (cat !== 'center') $('activeGroup').value = 'عام'; // حصص الأونلاين غير مرتبطة بجروب
       const on = "px-5 py-2 rounded-xl text-xs font-black transition bg-amber-400 text-blue-950 shadow";
       const off = "px-5 py-2 rounded-xl text-xs font-black transition text-slate-400";
       $('btnCatCenter').className = cat === 'center' ? on : off;
       $('btnCatOnline').className = cat === 'online' ? on : off;
-      $('btnCatVisitors').className = cat === 'visitors' ? on : off;
+      $('btnCatVisitors').className = off;
+      renderOnlineManager();
       fetchCategoryLesson();
     };
 
@@ -711,6 +793,7 @@
         refreshLessonSuggestions();
         fillLessonFields();
         loadAttendanceTable();
+        renderOnlineManager();
       }, 200);
     };
 
@@ -718,32 +801,86 @@
       const c = activeCtx();
       const id = activeLessonId();
       const existing = lessonsData.find(l => l.id === id);
-      const data = {
-        category: c.category, grade: c.grade, group: c.group, lessonName: c.name,
-        title: $('lesTitle').value.trim(),
+      const title = $('lesTitle').value.trim();
+      const content = {
         homework: $('lesHomework').value.trim(),
         video: $('lesVideo').value.trim(),
         quiz: $('lesQuiz').value.trim(),
-        updatedAt: serverTimestamp()
+        pdf: $('lesPdf').value.trim()
       };
-      if (!existing) data.createdAt = serverTimestamp();
       try {
-        await setDoc(doc(db, COL.lessons, id), data, { merge: true });
+        if (c.category === 'online') {
+          if (!existing) {
+            const n = lessonsData.filter(l => l.category === 'online' && l.grade === c.grade).length;
+            if (n >= 50) return alert("وصلت للحد الأقصى (50 حصة) لهذا الصف. احذف حصة لإضافة غيرها.");
+          }
+          // البيانات العامة للحصة: العنوان فقط (استبدال كامل حتى لا يبقى محتوى قديم ظاهراً لغير المشتركين)
+          await setDoc(doc(db, COL.lessons, id), {
+            category: 'online', grade: c.grade, group: c.group, lessonName: c.name, title,
+            createdAt: existing?.createdAt || serverTimestamp(), updatedAt: serverTimestamp()
+          });
+          // المحتوى (فيديو + اختبار + مذكرة + واجب): للمشتركين فقط
+          await setDoc(doc(db, COL.lessonsPrivate, id), { ...content, updatedAt: serverTimestamp() });
+        } else {
+          const data = { category: c.category, grade: c.grade, group: c.group, lessonName: c.name, title, ...content, updatedAt: serverTimestamp() };
+          if (!existing) data.createdAt = serverTimestamp();
+          await setDoc(doc(db, COL.lessons, id), data, { merge: true });
+        }
         lessonDirty = false;
         alert("تم حفظ تغييرات الحصة بنجاح!");
       } catch (e) { alert("تعذر حفظ الحصة. تحقق من الاتصال وصلاحيات Firestore."); }
     };
 
-    window.deleteActiveLesson = async function() {
-      const id = activeLessonId();
-      if (!lessonsData.some(l => l.id === id)) return alert("هذه الحصة غير محفوظة.");
-      if (!confirm("حذف هذه الحصة وكل درجات وحضور الطلاب المسجلة فيها؟")) return;
+    window.deleteLessonById = async function(id) {
+      const l = lessonsData.find(x => x.id === id);
+      if (!l) return alert("هذه الحصة غير محفوظة.");
+      if (!confirm(l.category === 'online' ? "حذف هذه الحصة من الأونلاين؟" : "حذف هذه الحصة وكل درجات وحضور الطلاب المسجلة فيها؟")) return;
       try {
         for (const r of allRecords.filter(r => r.lessonId === id)) await deleteDoc(doc(db, COL.records, r.id));
+        if (l.category === 'online') { try { await deleteDoc(doc(db, COL.lessonsPrivate, id)); } catch (e) {} }
         await deleteDoc(doc(db, COL.lessons, id));
         lessonDirty = false;
         alert("تم حذف الحصة بنجاح.");
       } catch (e) { alert("تعذر الحذف."); }
+    };
+
+    window.deleteActiveLesson = function() { return window.deleteLessonById(activeLessonId()); };
+
+    // ===== مدير حصص الأونلاين: 50 خانة لكل صف (إضافة / تعديل / حذف) =====
+    const onlineNum = (l) => { const m = /^الحصة\s*(\d+)$/.exec(String(l.lessonName || '').trim()); return m ? +m[1] : null; };
+
+    function renderOnlineManager() {
+      const box = $('onlineManager');
+      if (!box) return;
+      const on = currentCategory === 'online';
+      box.classList.toggle('hidden', !on);
+      if (!on) return;
+      const grade = $('activeGrade').value;
+      const list = lessonsData.filter(l => l.category === 'online' && l.grade === grade);
+      const byNum = new Map(), others = [];
+      list.forEach(l => { const n = onlineNum(l); if (n && n <= 50 && !byNum.has(n)) byNum.set(n, l); else others.push(l); });
+      $('onlineManagerCount').textContent = list.length;
+      const cur = lessonName();
+      let html = '';
+      for (let n = 1; n <= 50; n++) {
+        const l = byNum.get(n);
+        const isCur = cur === `الحصة ${n}`;
+        if (l) {
+          html += `<div class="relative"><button type="button" data-n="الحصة ${n}" onclick="pickOnlineLesson(this.dataset.n)" class="w-full py-2 rounded-xl text-xs font-black border ${isCur ? 'bg-amber-400 text-blue-950 border-amber-400' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}">${n}</button><button type="button" data-id="${esc(l.id)}" onclick="deleteLessonById(this.dataset.id)" title="حذف الحصة" class="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-rose-500 text-white text-[10px] leading-none">×</button></div>`;
+        } else {
+          html += `<button type="button" data-n="الحصة ${n}" onclick="pickOnlineLesson(this.dataset.n)" class="py-2 rounded-xl text-xs font-black border ${isCur ? 'bg-amber-400 text-blue-950 border-amber-400' : 'bg-slate-800 text-slate-500 border-slate-700 hover:border-amber-400'}">${n}</button>`;
+        }
+      }
+      $('onlineManagerGrid').innerHTML = html;
+      $('onlineManagerOthers').innerHTML = others.map(l => `<span class="inline-flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-xl px-2 py-1 text-[11px] text-slate-300"><button type="button" data-n="${esc(l.lessonName)}" onclick="pickOnlineLesson(this.dataset.n)">${esc(l.lessonName)}</button><button type="button" data-id="${esc(l.id)}" onclick="deleteLessonById(this.dataset.id)" class="text-rose-400">×</button></span>`).join('');
+    }
+
+    window.pickOnlineLesson = function(name) { $('activeLessonNameInput').value = name; lessonDirty = false; fetchCategoryLesson(); };
+    window.addOnlineLesson = function() {
+      const grade = $('activeGrade').value;
+      const have = new Set(lessonsData.filter(l => l.category === 'online' && l.grade === grade).map(onlineNum));
+      for (let n = 1; n <= 50; n++) { if (!have.has(n)) { window.pickOnlineLesson(`الحصة ${n}`); return; } }
+      alert("هذا الصف مكتمل: 50 حصة.");
     };
 
     // ================= أوائل الطلاب (حسب مجموع Coins) =================
@@ -1045,15 +1182,20 @@
         return;
       }
       onlineAccounts.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)).forEach(a => {
+        const until = a.activeUntil?.toDate ? a.activeUntil.toDate() : null;
+        const expired = !!(until && until < new Date());
+        const on = !!a.active && !expired;
+        const untilTxt = until ? ` | ينتهي: ${until.toLocaleDateString('ar-EG')}${expired ? ' (منتهي)' : ''}` : (a.active ? ' | بدون تاريخ انتهاء' : '');
+        const unlockedN = Array.isArray(a.unlocked) ? a.unlocked.length : 0;
         let card = document.createElement('div');
         card.className = "bg-brand-card border border-slate-700 p-4 rounded-2xl flex flex-wrap justify-between items-center gap-4 shadow";
         card.innerHTML = `
           <div>
             <h4 class="text-xs font-black text-white" dir="ltr">${esc(a.email)}</h4>
-            <p class="text-[10px] text-slate-400">${esc(a.name || 'بدون اسم')}</p>
+            <p class="text-[10px] text-slate-400">${esc(a.name || 'بدون اسم')}${untilTxt}${unlockedN ? ` | حصص مفتوحة: ${unlockedN}` : ''}</p>
           </div>
-          <button onclick="window.toggleOnlineAccount('${a.uid}', ${!a.active})" class="px-3 py-1.5 rounded-xl text-xs font-bold ${a.active ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-800 text-slate-400 border border-slate-700'}">
-            ${a.active ? '✓ الاشتراك مفعل (اضغط للإيقاف)' : '+ تفعيل الاشتراك'}
+          <button onclick="window.toggleOnlineAccount('${a.uid}', ${!on})" class="px-3 py-1.5 rounded-xl text-xs font-bold ${on ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-800 text-slate-400 border border-slate-700'}">
+            ${on ? '✓ الاشتراك مفعل (اضغط للإيقاف)' : '+ تفعيل الاشتراك'}
           </button>
         `;
         box.appendChild(card);
@@ -1061,8 +1203,107 @@
     };
 
     window.toggleOnlineAccount = async function(uid, state) {
-      try { await updateDoc(doc(db, COL.online, uid), { active: state }); } catch (e) { alert("تعذر التحديث."); }
+      try { await updateDoc(doc(db, COL.online, uid), state ? { active: true, activeUntil: null } : { active: false }); } catch (e) { alert("تعذر التحديث."); }
     };
+
+    // ================= الأسعار وطلبات الدفع (محفظة كاش) =================
+    function fillSettingsForm() {
+      if (['setMonthly', 'setLesson', 'setWallet'].includes(document.activeElement && document.activeElement.id)) return;
+      $('setMonthly').value = onlineSettings.monthlyPrice ?? '';
+      $('setLesson').value = onlineSettings.lessonPrice ?? '';
+      $('setWallet').value = onlineSettings.wallet || DEFAULT_WALLET;
+    }
+    window.saveOnlineSettings = async function() {
+      const monthlyPrice = parseFloat($('setMonthly').value) || 0;
+      const lessonPrice = parseFloat($('setLesson').value) || 0;
+      const wallet = $('setWallet').value.trim();
+      if (!/^01\d{9}$/.test(wallet)) return alert("رقم المحفظة يجب أن يكون 11 رقماً ويبدأ بـ 01.");
+      try { await setDoc(doc(db, COL.settings, 'online'), { monthlyPrice, lessonPrice, wallet }, { merge: true }); alert("تم حفظ الأسعار ورقم المحفظة."); }
+      catch (e) { alert("تعذر الحفظ."); }
+    };
+
+    const fmtTime = (t) => (t?.toDate ? t.toDate().toLocaleString('ar-EG') : '');
+    function renderPayments() {
+      const box = $('paymentsContainer');
+      if (!box) return;
+      const pend = paymentsList.filter(p => p.status === 'pending');
+      const done = paymentsList.filter(p => p.status !== 'pending').slice(0, 15);
+      const badge = $('paymentsBadge');
+      if (badge) { badge.textContent = pend.length ? `${pend.length} طلب جديد` : ''; badge.classList.toggle('hidden', !pend.length); }
+      const planTxt = (p) => p.plan === 'monthly' ? 'اشتراك شهري' : `حصة: ${esc(p.lessonTitle || p.lessonId)}`;
+      let html = '';
+      if (!pend.length) html += `<div class="p-4 text-center text-xs text-slate-400 bg-slate-900 rounded-2xl border border-slate-700">لا توجد طلبات دفع معلّقة.</div>`;
+      pend.forEach(p => {
+        html += `<div class="bg-brand-card border border-amber-400/40 p-4 rounded-2xl space-y-2">
+          <div class="flex flex-wrap justify-between gap-2">
+            <h4 class="text-xs font-black text-white" dir="ltr">${esc(p.email)} <span class="text-slate-400">${esc(p.name || '')}</span></h4>
+            <span class="text-[10px] text-slate-400">${esc(fmtTime(p.createdAt))}</span>
+          </div>
+          <p class="text-xs text-slate-300"><b class="text-amber-400">${planTxt(p)}</b> | المبلغ: <b class="text-amber-400">${esc(p.amount)} جنيه</b> | حوّل من رقم: <b dir="ltr">${esc(p.fromPhone)}</b>${p.ref ? ` | مرجع العملية: <b dir="ltr">${esc(p.ref)}</b>` : ''}</p>
+          <div class="flex gap-2">
+            <button data-id="${esc(p.id)}" onclick="approvePayment(this.dataset.id)" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-black transition">تأكيد الاستلام وتفعيل</button>
+            <button data-id="${esc(p.id)}" onclick="rejectPayment(this.dataset.id)" class="bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white px-4 py-2 rounded-xl text-xs font-black transition">رفض</button>
+          </div></div>`;
+      });
+      if (done.length) {
+        html += `<h4 class="text-[11px] font-black text-slate-400 pt-2">آخر الطلبات المنتهية</h4>`;
+        done.forEach(p => {
+          html += `<div class="flex flex-wrap justify-between gap-2 bg-slate-900 border border-slate-800 px-3 py-2 rounded-xl text-[11px] text-slate-300"><span dir="ltr">${esc(p.email)}</span><span>${planTxt(p)} | ${esc(p.amount)} ج</span><span class="${p.status === 'approved' ? 'text-emerald-400' : 'text-rose-400'}">${p.status === 'approved' ? 'تم التأكيد' : 'مرفوض'}</span></div>`;
+        });
+      }
+      box.innerHTML = html;
+    }
+
+    window.approvePayment = async function(pid) {
+      const p = paymentsList.find(x => x.id === pid);
+      if (!p || p.status !== 'pending') return;
+      if (!confirm(`هل وصلك فعلاً مبلغ ${p.amount} جنيه في محفظتك من الرقم ${p.fromPhone}؟\\nتأكد من تطبيق المحفظة قبل التأكيد.`)) return;
+      try {
+        if (p.plan === 'monthly') {
+          const acc = onlineAccounts.find(a => a.uid === p.uid);
+          const cur = acc?.activeUntil?.toMillis ? acc.activeUntil.toMillis() : 0;
+          const until = Timestamp.fromMillis(Math.max(Date.now(), cur) + 30 * 24 * 3600 * 1000);
+          await updateDoc(doc(db, COL.online, p.uid), { active: true, activeUntil: until });
+        } else {
+          await updateDoc(doc(db, COL.online, p.uid), { unlocked: arrayUnion(p.lessonId) });
+        }
+        await updateDoc(doc(db, COL.payments, pid), { status: 'approved', approvedAt: serverTimestamp() });
+      } catch (e) { alert("تعذر التأكيد. تحقق من الاتصال وصلاحيات Firestore."); }
+    };
+    window.rejectPayment = async function(pid) {
+      if (!confirm("رفض هذا الطلب؟")) return;
+      try { await updateDoc(doc(db, COL.payments, pid), { status: 'rejected' }); } catch (e) { alert("تعذر التحديث."); }
+    };
+
+    // ================= محتوى صفحة الزوار =================
+    const V_TYPES = { video: 'فيديو', image: 'صورة', pdf: 'مذكرة PDF', phrase: 'جملة تحفيزية', note: 'إعلان / نص' };
+    window.vTypeChanged = function() {
+      const t = $('vType').value;
+      $('vUrl').classList.toggle('hidden', t === 'phrase' || t === 'note');
+      $('vTitle').placeholder = t === 'phrase' ? 'اكتب الجملة التحفيزية' : 'العنوان';
+    };
+    window.addVisitorItem = async function() {
+      const type = $('vType').value, title = $('vTitle').value.trim(), url = $('vUrl').value.trim(), desc = $('vDesc').value.trim();
+      if (!title) return alert("اكتب العنوان أو الجملة.");
+      if (['video', 'image', 'pdf'].includes(type) && !safeUrl(url)) return alert("أدخل رابطاً صحيحاً يبدأ بـ https://");
+      try {
+        await addDoc(collection(db, COL.visitor), { type, title, url: ['phrase', 'note'].includes(type) ? '' : url, desc, createdAt: serverTimestamp() });
+        ['vTitle', 'vUrl', 'vDesc'].forEach(id => { $(id).value = ''; });
+      } catch (e) { alert("تعذرت الإضافة."); }
+    };
+    window.deleteVisitorItem = async function(id) {
+      if (!confirm("حذف هذا العنصر من صفحة الزوار؟")) return;
+      try { await deleteDoc(doc(db, COL.visitor, id)); } catch (e) { alert("تعذر الحذف."); }
+    };
+    function renderVisitorAdmin() {
+      const box = $('visitorAdminList');
+      if (!box) return;
+      if (!visitorList.length) { box.innerHTML = `<div class="p-4 text-center text-xs text-slate-400 bg-slate-900 rounded-2xl border border-slate-700">لم تُضف أي مواد لصفحة الزوار بعد.</div>`; return; }
+      box.innerHTML = visitorList.map(v => `<div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2">
+          <div class="min-w-0"><span class="text-[10px] font-black bg-amber-400/10 text-amber-400 border border-amber-400/20 px-2 py-0.5 rounded-lg">${V_TYPES[v.type] || esc(v.type)}</span>
+          <span class="text-xs font-bold text-white mr-2">${esc(v.title)}</span>${v.url ? `<span class="block text-[10px] text-slate-500 truncate" dir="ltr">${esc(v.url)}</span>` : ''}</div>
+          <button data-id="${esc(v.id)}" onclick="deleteVisitorItem(this.dataset.id)" class="bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white px-3 py-1.5 rounded-lg text-[11px] font-bold transition">حذف</button></div>`).join('');
+    }
 
     // ================= جدول الطلاب المسجلين (تعديل مباشر داخل قسم التسجيل) =================
     const rowInp = "w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-xs font-bold text-amber-400 focus:outline-none focus:border-amber-400";
@@ -1203,7 +1444,7 @@
 
     window.initDashboard = function() {
       window.generateNewId();
-      ['lesTitle', 'lesHomework', 'lesVideo', 'lesQuiz'].forEach(id => $(id).addEventListener('input', () => { lessonDirty = true; }));
+      ['lesTitle', 'lesHomework', 'lesVideo', 'lesQuiz', 'lesPdf'].forEach(id => $(id).addEventListener('input', () => { lessonDirty = true; }));
       $('loginPass').addEventListener('keydown', (e) => { if (e.key === 'Enter') window.teacherLogin(); });
       $('inGroup').addEventListener('change', renderInlineStudents);
       $('inlineStudentsBody').addEventListener('focusout', () => setTimeout(() => {
