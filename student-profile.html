@@ -147,11 +147,11 @@
         <div class="space-y-3 text-xs font-bold">
           <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
             <span class="text-slate-400">هاتف الطالب / Student Phone:</span>
-            <span id="pfPhone" class="text-slate-900 dark:text-white" dir="ltr">—</span>
+            <input id="pfPhone" type="tel" dir="ltr" inputmode="numeric" placeholder="01xxxxxxxxx" class="w-full max-w-[210px] bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-400">
           </div>
           <div class="flex justify-between py-2 border-b border-slate-100 dark:border-slate-800/50">
             <span class="text-slate-400">هاتف ولي الأمر / Parent Phone:</span>
-            <span id="pfParent" class="text-slate-900 dark:text-white" dir="ltr">—</span>
+            <input id="pfParent" type="tel" dir="ltr" inputmode="numeric" placeholder="01xxxxxxxxx" class="w-full max-w-[210px] bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-400">
           </div>
           <div class="flex justify-between items-center gap-3 py-2 border-b border-slate-100 dark:border-slate-800/50">
             <span class="text-slate-400 whitespace-nowrap">البريد الإلكتروني / Email:</span>
@@ -237,17 +237,28 @@
       const st = await requireStudent();
       set("pfTitle", st.name); set("pfIdLine", `Student ID: #${st.id}`);
       set("pfName", st.name); set("pfStage", stageOf(st.grade)); set("pfGrade", st.grade); set("pfGroup", st.group);
-      set("pfPhone", st.phone || "—"); set("pfParent", st.parentPhone || "—");
+      document.getElementById("pfPhone").value = st.phone || ""; document.getElementById("pfParent").value = st.parentPhone || "";
       set("pfOnline", st.isPaidOnline ? "مفعل" : "غير مشترك");
-      const emailInput = document.getElementById("pfEmail"), msg = document.getElementById("pfEmailMsg");
-      emailInput.value = st.email || "";
-      document.getElementById("pfEmailSave").addEventListener("click", async () => {
-        const v = emailInput.value.trim().toLowerCase();
-        if (v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { msg.textContent = "البريد الإلكتروني غير صحيح."; msg.className = "text-[10px] font-bold text-rose-500"; return; }
+      const $i = (id) => document.getElementById(id);
+      const msg = $i("pfEmailMsg");
+      $i("pfEmail").value = st.email || "";
+      if (new URLSearchParams(location.search).get("welcome") || !st.phone || !st.parentPhone) {
+        msg.textContent = "👋 أهلاً بك! أكمل بياناتك (رقم هاتفك، ورقم ولي الأمر، وبريدك الإلكتروني) ثم اضغط حفظ.";
+        msg.className = "text-xs font-black text-amber-500";
+      }
+      const digits = (v) => String(v || "").replace(/[\s\-]/g, "").replace(/[٠-٩]/g, (d) => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
+      $i("pfEmailSave").textContent = "حفظ بياناتي";
+      $i("pfEmailSave").addEventListener("click", async () => {
+        const phone = digits($i("pfPhone").value), parent = digits($i("pfParent").value), email = $i("pfEmail").value.trim().toLowerCase();
+        const bad = (t) => { msg.textContent = t; msg.className = "text-xs font-black text-rose-500"; };
+        if (!/^01\d{9}$/.test(phone)) return bad("اكتب رقم هاتفك الصحيح (11 رقماً يبدأ بـ 01).");
+        if (!/^01\d{9}$/.test(parent)) return bad("اكتب رقم هاتف ولي الأمر الصحيح (11 رقماً يبدأ بـ 01).");
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return bad("البريد الإلكتروني غير صحيح.");
         try {
-          await setDoc(doc(db, COL.students, sKey(st.id)), { email: v }, { merge: true });
-          msg.textContent = "تم حفظ بريدك الإلكتروني ✅"; msg.className = "text-[10px] font-bold text-emerald-500";
-        } catch (e) { msg.textContent = "تعذر الحفظ، حاول مرة أخرى."; msg.className = "text-[10px] font-bold text-rose-500"; }
+          await setDoc(doc(db, COL.students, sKey(st.id)), { phone, parentPhone: parent, email }, { merge: true });
+          $i("pfPhone").value = phone; $i("pfParent").value = parent;
+          msg.textContent = "تم حفظ بياناتك ✅"; msg.className = "text-xs font-black text-emerald-500";
+        } catch (e) { bad("تعذر الحفظ، حاول مرة أخرى."); }
       });
       const d = st.createdAt?.toDate ? st.createdAt.toDate() : null;
       set("pfDate", d ? `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}` : "—");
