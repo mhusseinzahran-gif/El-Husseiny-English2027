@@ -167,18 +167,18 @@
         </div>
 
         <div class="space-y-1">
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">هاتف الطالب</label>
-          <input type="text" id="inStudentPhone" required placeholder="01112223344" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400" dir="ltr">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">هاتف الطالب (اختياري - يكمله الطالب)</label>
+          <input type="text" id="inStudentPhone" placeholder="01112223344" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400" dir="ltr">
         </div>
 
         <div class="space-y-1">
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">هاتف ولي الأمر</label>
-          <input type="text" id="inParentPhone" required placeholder="01009988776" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400" dir="ltr">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">هاتف ولي الأمر (اختياري - يكمله الطالب)</label>
+          <input type="text" id="inParentPhone" placeholder="01009988776" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-amber-400" dir="ltr">
         </div>
 
         <div class="space-y-1">
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">الصف الدراسي</label>
-          <select id="inGrade" onchange="updateFormGroupsDropdown()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-amber-400 focus:outline-none">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">الصف الدراسي (يتحدد تلقائياً من المجموعة)</label>
+          <select id="inGrade" onchange="onFormGradeChange()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-amber-400 focus:outline-none">
             <optgroup label="المرحلة الابتدائية">
               <option value="الصف الأول الابتدائي">الصف الأول الابتدائي</option>
               <option value="الصف الثاني الابتدائي">الصف الثاني الابتدائي</option>
@@ -219,6 +219,16 @@
           </button>
         </div>
       </form>
+
+      <details class="bg-slate-900 border border-slate-700 rounded-2xl p-3 mt-3">
+        <summary class="text-xs font-black text-amber-400 cursor-pointer">إضافة عدة طلاب دفعة واحدة (الأسماء فقط)</summary>
+        <div class="space-y-2 mt-3">
+          <p class="text-[11px] text-slate-400">اختر <b class="text-amber-400">المجموعة</b> من النموذج أعلاه، ثم اكتب أسماء الطلاب (كل اسم في سطر). يتولد لكل طالب كود (ID) تلقائياً، ثم يكمل الطالب باقي بياناته بنفسه بعد دخوله بالكود.</p>
+          <textarea id="bulkNames" rows="6" placeholder="محمد أحمد إبراهيم&#10;أحمد علي حسن&#10;..." class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2 text-xs text-white focus:outline-none focus:border-amber-400"></textarea>
+          <button type="button" onclick="bulkAddStudents()" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-4 py-2 rounded-xl font-black text-xs transition">تسجيل كل الأسماء وتوليد الأكواد</button>
+          <div id="bulkResult" class="text-xs text-slate-300"></div>
+        </div>
+      </details>
 
       <div class="pt-4 mt-2 border-t border-slate-700 space-y-3">
         <h4 class="text-xs font-black text-white flex items-center gap-2">
@@ -698,33 +708,44 @@
     }
 
     // قائمة الجروب داخل نموذج تسجيل/تعديل الطالب: مرتبطة بالصف المختار ومجموعات قسم المجموعات
+    function syncGradeFromGroup() {
+      const g = customGroups.find(x => x.name === $('inGroup').value);
+      if (g) $('inGrade').value = g.grade;
+    }
+    window.onFormGradeChange = function() {
+      const g = customGroups.find(x => x.name === $('inGroup').value);
+      if (g && g.grade !== $('inGrade').value) $('inGroup').value = '';
+      renderInlineStudents();
+    };
+
+    // قائمة الجروب في نموذج التسجيل: كل مجموعات المعلم مصنفة حسب الصف
     window.updateFormGroupsDropdown = function(preferredGroup) {
       const sel = $('inGroup');
       if (!sel) return;
-      const grade = $('inGrade').value;
       const previous = (typeof preferredGroup === 'string') ? preferredGroup : sel.value;
-      const list = groupsOfGrade(grade);
       sel.innerHTML = "";
-      if (list.length === 0) {
-        let ph = document.createElement('option');
-        ph.value = ""; ph.textContent = "لا توجد مجموعات لهذا الصف - أضف مجموعة أولاً";
-        sel.appendChild(ph);
-      } else {
-        list.forEach(grp => {
-          let opt = document.createElement('option');
-          opt.value = grp.name; opt.textContent = grp.name;
-          sel.appendChild(opt);
-        });
-      }
+      const ph = document.createElement('option');
+      ph.value = "";
+      ph.textContent = customGroups.length ? "اختر المجموعة" : "لا توجد مجموعات - أضف مجموعة أولاً";
+      sel.appendChild(ph);
+      Array.from($('inGrade').options).map(o => o.value).forEach(gr => {
+        const gs = customGroups.filter(g => g.grade === gr);
+        if (!gs.length) return;
+        const og = document.createElement('optgroup');
+        og.label = gr;
+        gs.forEach(g => { const o = document.createElement('option'); o.value = g.name; o.textContent = g.name; og.appendChild(o); });
+        sel.appendChild(og);
+      });
       if (previous && Array.from(sel.options).some(o => o.value === previous)) {
         sel.value = previous;
       } else if (previous && editingStudentId) {
         // طالب مسجل في مجموعة قديمة/محذوفة: نبقيها كخيار حتى لا تضيع بياناته عند التعديل
-        let keep = document.createElement('option');
+        const keep = document.createElement('option');
         keep.value = previous; keep.textContent = previous;
-        sel.insertBefore(keep, sel.firstChild);
+        sel.insertBefore(keep, sel.options[1] || null);
         sel.value = previous;
       }
+      syncGradeFromGroup();
       renderInlineStudents();
     };
 
@@ -1052,8 +1073,8 @@
         card.className = "bg-brand-card border border-slate-700 p-4 rounded-2xl flex flex-wrap justify-between items-center gap-4 shadow";
         card.innerHTML = `
           <div>
-            <h4 class="text-xs font-black text-white">${esc(st.name)} <span class="text-amber-400 font-mono">(${esc(st.id)})</span>${st.isBanned ? ' <span class="text-rose-400">🚫 محظور</span>' : ''}</h4>
-            <p class="text-[10px] text-slate-400">${esc(st.grade)} | ${esc(st.group)} | هاتف: ${esc(st.phone)}${st.email ? ' | ' + esc(st.email) : ''}</p>
+            <h4 class="text-xs font-black text-white">${esc(st.name)} <span class="text-amber-400 font-mono">(${esc(st.id)})</span>${st.isBanned ? ' <span class="text-rose-400">🚫 محظور</span>' : ''}${(!st.phone || !st.parentPhone) ? ' <span class="text-amber-400 text-[10px] font-bold">⚠ بيانات ناقصة (يكملها الطالب)</span>' : ''}</h4>
+            <p class="text-[10px] text-slate-400">${esc(st.grade)} | ${esc(st.group)} ${st.phone ? '| هاتف: ' + esc(st.phone) : ''}${st.email ? ' | ' + esc(st.email) : ''}</p>
           </div>
           <div class="flex items-center gap-2">
             <button onclick="window.togglePaidOnlineStatus('${st.id}', ${!st.isPaidOnline})" class="px-3 py-1.5 rounded-xl text-xs font-bold ${st.isPaidOnline ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-800 text-slate-400 border border-slate-700'}">
@@ -1433,6 +1454,46 @@
       out.textContent = `تم تسجيل ${matched.length} طالب (حصلوا على Coin). غير مطابق: ${unmatched.length}${unmatched.length ? ' (' + unmatched.join(' ، ') + ')' : ''}. طلاب بدون بريد مسجل: ${noEmail}.`;
     };
 
+    const makeId = () => {
+      const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      let res = "";
+      for (let i = 0; i < 3; i++) res += letters.charAt(Math.floor(Math.random() * letters.length));
+      for (let i = 0; i < 3; i++) res += Math.floor(Math.random() * 10);
+      return res;
+    };
+
+    let lastBulk = [];
+    window.bulkAddStudents = async function() {
+      const group = $('inGroup').value;
+      if (!group) return alert("اختر المجموعة أولاً من نموذج التسجيل أعلاه.");
+      const grade = (customGroups.find(g => g.name === group) || {}).grade || $('inGrade').value;
+      const names = Array.from(new Set($('bulkNames').value.split('\n').map(x => x.trim()).filter(Boolean)));
+      if (!names.length) return alert("اكتب أسماء الطلاب، كل اسم في سطر.");
+      if (names.length > 60) return alert("الحد الأقصى 60 اسماً في المرة الواحدة.");
+      const out = $('bulkResult');
+      lastBulk = [];
+      const used = new Set(studentsData.map(s => sKey(s.id)));
+      let fail = 0;
+      for (let i = 0; i < names.length; i++) {
+        out.textContent = `جاري التسجيل... ${i + 1} / ${names.length}`;
+        let id;
+        do { id = makeId(); } while (used.has(sKey(id)));
+        used.add(sKey(id));
+        try {
+          const uid = await ensureStudentAuth(id);
+          await setDoc(doc(db, COL.students, sKey(id)), { id, name: names[i], grade, group, phone: '', parentPhone: '', email: '', isPaidOnline: false, isBanned: false, uid, createdAt: serverTimestamp() });
+          lastBulk.push({ name: names[i], id });
+        } catch (e) { fail++; }
+      }
+      $('bulkNames').value = '';
+      out.innerHTML = `<p class="font-black text-emerald-400 mb-2">تم تسجيل ${lastBulk.length} طالب في ${esc(group)}${fail ? ` (تعذر تسجيل ${fail})` : ''}. سلّم كل طالب كوده:</p>
+        <div class="overflow-x-auto"><table class="w-full text-right text-xs"><tbody>${lastBulk.map(r => `<tr class="border-b border-slate-800"><td class="p-1.5 text-white">${esc(r.name)}</td><td class="p-1.5 text-amber-400 font-mono">${esc(r.id)}</td></tr>`).join('')}</tbody></table></div>
+        <button type="button" onclick="copyBulkResult()" class="mt-2 bg-slate-800 border border-slate-700 text-amber-400 px-3 py-1.5 rounded-lg text-[11px] font-black">نسخ القائمة (الاسم + الكود)</button>`;
+    };
+    window.copyBulkResult = function() {
+      navigator.clipboard.writeText(lastBulk.map(r => `${r.name}\t${r.id}`).join('\n')).then(() => alert("تم نسخ القائمة. الصقها في Excel أو واتساب."));
+    };
+
     window.generateNewId = function() {
       if (editingStudentId) return;
       const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -1446,7 +1507,7 @@
       window.generateNewId();
       ['lesTitle', 'lesHomework', 'lesVideo', 'lesQuiz', 'lesPdf'].forEach(id => $(id).addEventListener('input', () => { lessonDirty = true; }));
       $('loginPass').addEventListener('keydown', (e) => { if (e.key === 'Enter') window.teacherLogin(); });
-      $('inGroup').addEventListener('change', renderInlineStudents);
+      $('inGroup').addEventListener('change', () => { syncGradeFromGroup(); renderInlineStudents(); });
       $('inlineStudentsBody').addEventListener('focusout', () => setTimeout(() => {
         if (inlineDirty && !$('inlineStudentsBody').contains(document.activeElement)) { inlineDirty = false; renderInlineStudents(); }
       }, 250));
