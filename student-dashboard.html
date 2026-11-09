@@ -57,6 +57,17 @@
             </div>
         </header>
 
+        <!-- تنبيه إكمال البيانات -->
+        <div id="completeBanner" class="hidden">
+          <a href="student-profile.html?welcome=1" class="flex items-center justify-between gap-4 bg-rose-500/10 border border-rose-500/30 text-rose-500 dark:text-rose-300 p-4 rounded-3xl shadow-xl transition hover:bg-rose-500/20">
+            <div class="flex items-center gap-3">
+              <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+              <div><h4 class="text-sm font-black">أكمل بياناتك الشخصية</h4><p class="text-xs">رقم هاتفك وهاتف ولي الأمر وبريدك الإلكتروني (لتسجيل الاختبارات الإلكترونية)</p></div>
+            </div>
+            <span class="bg-rose-500 text-white px-4 py-2 rounded-xl text-xs font-black whitespace-nowrap">إكمال الآن</span>
+          </a>
+        </div>
+
         <!-- بنر المشاركة -->
         <div class="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 p-6 rounded-3xl text-slate-900 shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-4">
@@ -149,6 +160,7 @@
     window.studentLogout = logout;
     (async () => {
       const st = await requireStudent();
+      if (!st.phone || !st.parentPhone) document.getElementById("completeBanner").classList.remove("hidden");
       document.getElementById("stName").textContent = st.name;
       document.getElementById("stGrade").textContent = `${st.grade} | ${st.group} - منصة مستر محمد الحسيني`;
       const container = document.getElementById("lessonsContainer");
