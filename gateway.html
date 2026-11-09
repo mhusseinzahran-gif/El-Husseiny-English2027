@@ -238,7 +238,7 @@
         const st = await studentLogin(idInput, rememberMe);
         if (rememberMe) localStorage.setItem("remembered_student_id", st.id);
         else localStorage.removeItem("remembered_student_id");
-        window.location.href = "student-dashboard.html";
+        window.location.href = (st.phone && st.parentPhone) ? "student-dashboard.html" : "student-profile.html?welcome=1";
       } catch (e) {
         if (e.code === "app/banned") show("عفواً، هذا الحساب محظور حالياً من قبل المعلم.");
         else if (e.code === "auth/too-many-requests") show("تم تعطيل الدخول مؤقتاً لكثرة المحاولات الخاطئة. حاول لاحقاً أو تواصل مع المستر.");
