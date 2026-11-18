@@ -263,7 +263,7 @@
     }
   </script>
   <script type="module">
-    import { requireStudent, requireOnline, db, doc, getDoc, COL, COIN_RULES, myLessons, sKey, ytEmbed, esc } from "./platform.js";
+    import { requireStudent, requireOnline, db, doc, getDoc, COL, COIN_RULES, myLessons, sKey, ytEmbed, protectYouTube, esc } from "./platform.js";
     const $ = (id) => document.getElementById(id);
     const params = new URLSearchParams(location.search);
     const lid = params.get("id");
@@ -297,12 +297,25 @@
         set("lessonBadge", `الحصة رقم (${i >= 0 ? i + 1 : "-"}) - ${lesson.lessonName} 📚`);
       } else set("lessonBadge", `${lesson.lessonName} 📚`);
 
-      // الفيديو
-      const embed = ytEmbed(lesson.video);
+      // الفيديو (يمكن أن يكون أكثر من فيديو)
+      const parseVideos = (str) => String(str || "").split(/\r?\n/).map((l) => l.trim()).filter(Boolean).map((l) => {
+        const i = l.indexOf("|"); const t = i > -1 ? l.slice(0, i).trim() : ""; const u = (i > -1 ? l.slice(i + 1) : l).trim();
+        return /^https?:\/\//i.test(u) ? { title: t, url: u } : null;
+      }).filter(Boolean);
+      const videoBlocks = (vids) => !vids.length
+        ? `<div class="relative w-full aspect-video rounded-2xl bg-slate-900 border border-slate-700 flex items-center justify-center"><span class="text-slate-300 text-sm font-bold">لم يتم رفع فيديو لهذه الحصة بعد</span></div>`
+        : vids.map((v, i) => {
+            const e = ytEmbed(v.url);
+            return `<div class="space-y-2">${vids.length > 1 || v.title ? `<p class="text-xs font-black text-slate-700 dark:text-slate-200">🎬 ${esc(v.title || "الفيديو " + (i + 1))}</p>` : ""}
+              <div class="relative w-full aspect-video rounded-2xl bg-slate-900 border border-slate-700 overflow-hidden flex items-center justify-center">
+              ${e ? `<iframe class="absolute inset-0 w-full h-full" src="${esc(e)}" title="Lesson video ${i + 1}" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><div class="absolute top-0 inset-x-0 h-14 z-10"></div>`
+                  : `<a href="${esc(v.url)}" target="_blank" rel="noopener" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-6 py-3 rounded-2xl font-black text-sm shadow-xl">فتح الفيديو <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i></a>`}
+              </div></div>`;
+          }).join("");
       const box = $("videoBox");
-      if (embed) box.innerHTML = `<iframe class="absolute inset-0 w-full h-full" src="${embed}" title="Lesson video" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
-      else if (lesson.video && /^https?:\/\//i.test(lesson.video)) box.innerHTML = `<a href="${esc(lesson.video)}" target="_blank" rel="noopener" class="relative bg-amber-400 hover:bg-amber-500 text-blue-950 px-6 py-3 rounded-2xl font-black text-sm shadow-xl">فتح فيديو الشرح <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i></a>`;
-      else box.innerHTML = `<span class="relative text-slate-300 text-sm font-bold">لم يتم إضافة فيديو لهذه الحصة بعد</span>`;
+      box.className = "space-y-4";
+      box.innerHTML = videoBlocks(parseVideos(lesson.video));
+      protectYouTube(box);
 
       // الواجب
       set("hwText", lesson.homework ? `المطلوب: ${lesson.homework}` : "لا يوجد واجب مضاف");
