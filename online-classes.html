@@ -175,7 +175,7 @@
     }
   </script>
   <script type="module">
-    import { requireOnline, onlineLessons, esc, ytEmbed, safeUrl, getLessonPrivate, getOnlineSettings, submitPayment, myPayments, DEFAULT_WALLET } from "./platform.js";
+    import { requireOnline, onlineLessons, esc, ytEmbed, protectYouTube, safeUrl, getLessonPrivate, getOnlineSettings, submitPayment, myPayments, DEFAULT_WALLET } from "./platform.js";
     const $ = (id) => document.getElementById(id);
 
     const STAGES = [
@@ -188,6 +188,20 @@
         grades: [["الصف الأول الثانوي", "Secondary 1"], ["الصف الثاني الثانوي", "Secondary 2"], ["الصف الثالث الثانوي", "Secondary 3"]] }
     ];
     const lessonOrder = (l) => { const m = /^الحصة\s*(\d+)$/.exec(String(l.lessonName || "").trim()); return m ? +m[1] : 1000 + (l.createdAt?.seconds || 0) / 1e10; };
+    const parseVideos = (str) => String(str || "").split(/\r?\n/).map((l) => l.trim()).filter(Boolean).map((l) => {
+      const i = l.indexOf("|"); const t = i > -1 ? l.slice(0, i).trim() : ""; const u = (i > -1 ? l.slice(i + 1) : l).trim();
+      return /^https?:\/\//i.test(u) ? { title: t, url: u } : null;
+    }).filter(Boolean);
+    const videoBlocks = (vids) => !vids.length
+      ? `<div class="relative w-full aspect-video rounded-2xl bg-slate-900 border border-slate-700 flex items-center justify-center"><span class="text-slate-300 text-sm font-bold">لم يتم رفع فيديو لهذه الحصة بعد</span></div>`
+      : vids.map((v, i) => {
+          const e = ytEmbed(v.url);
+          return `<div class="space-y-2">${vids.length > 1 || v.title ? `<p class="text-xs font-black text-slate-700 dark:text-slate-200">🎬 ${esc(v.title || "الفيديو " + (i + 1))}</p>` : ""}
+            <div class="relative w-full aspect-video rounded-2xl bg-slate-900 border border-slate-700 overflow-hidden flex items-center justify-center">
+            ${e ? `<iframe class="absolute inset-0 w-full h-full" src="${esc(e)}" title="Lesson video ${i + 1}" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><div class="absolute top-0 inset-x-0 h-14 z-10"></div>`
+                : `<a href="${esc(v.url)}" target="_blank" rel="noopener" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-6 py-3 rounded-2xl font-black text-sm shadow-xl">فتح الفيديو <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i></a>`}
+            </div></div>`;
+        }).join("");
     const money = (n) => (n ? `${n} جنيه` : "—");
 
     (async () => {
@@ -295,17 +309,14 @@
           return;
         }
         c = c || {};
-        const embed = ytEmbed(c.video), vurl = safeUrl(c.video);
+        const vids = parseVideos(c.video);
         view.innerHTML = head + `${c.homework ? `<p class="text-xs font-bold text-slate-500 dark:text-slate-300 bg-amber-400/10 border border-amber-400/20 rounded-xl px-3 py-2">📚 الواجب المطلوب: ${esc(c.homework)}</p>` : ""}
-          <div class="relative w-full aspect-video rounded-2xl bg-slate-900 border border-slate-700 overflow-hidden flex items-center justify-center">
-            ${embed ? `<iframe class="absolute inset-0 w-full h-full" src="${esc(embed)}" title="Lesson video" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`
-              : vurl ? `<a href="${esc(vurl)}" target="_blank" rel="noopener" class="bg-amber-400 hover:bg-amber-500 text-blue-950 px-6 py-3 rounded-2xl font-black text-sm shadow-xl">فتح فيديو الشرح <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i></a>`
-              : `<span class="text-slate-300 text-sm font-bold">لم يتم رفع فيديو لهذه الحصة بعد</span>`}
-          </div>
+          ${videoBlocks(vids)}
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             ${linkCard("fa-laptop-code", "bg-amber-500/10 text-amber-500", "الاختبار الإلكتروني", "Electronic Test", safeUrl(c.quiz), "ابدأ الاختبار")}
             ${linkCard("fa-file-pdf", "bg-rose-500/10 text-rose-500", "مذكرة الحصة PDF", "Lesson Notes (PDF)", safeUrl(c.pdf), "فتح / تحميل المذكرة")}
           </div>`;
+        protectYouTube(view);
       }
 
       function render() {
