@@ -57,7 +57,35 @@ export function lessonId(category, grade, group, name) {
 export function ytEmbed(url) {
   if (!url) return "";
   const m = String(url).match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
-  return m ? `https://www.youtube.com/embed/${m[1]}` : "";
+  // rel=0: يقلل الفيديوهات المقترحة (من نفس القناة فقط) | modestbranding: يخفي شعار يوتيوب | iv_load_policy=3: يخفي التعليقات المنبثقة
+  return m ? `https://www.youtube.com/embed/${m[1]}?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1` : "";
+}
+
+// عند انتهاء الفيديو نوقفه ونعيده للصورة الأولى حتى لا تظهر شاشة الفيديوهات المقترحة
+let ytApiPromise = null;
+function loadYtApi() {
+  if (window.YT && window.YT.Player) return Promise.resolve();
+  if (!ytApiPromise) {
+    ytApiPromise = new Promise((res) => {
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => { if (prev) prev(); res(); };
+      const sc = document.createElement("script");
+      sc.src = "https://www.youtube.com/iframe_api"; sc.async = true; sc.onerror = () => res();
+      document.head.appendChild(sc);
+    });
+  }
+  return ytApiPromise;
+}
+export async function protectYouTube(root = document) {
+  const frames = Array.from(root.querySelectorAll('iframe[src*="youtube.com/embed"]'));
+  if (!frames.length) return;
+  await loadYtApi();
+  if (!(window.YT && window.YT.Player)) return;
+  frames.forEach((f) => {
+    if (f.dataset.ytProtected) return;
+    f.dataset.ytProtected = "1";
+    try { new window.YT.Player(f, { events: { onStateChange: (e) => { if (e.data === 0) { try { e.target.stopVideo(); } catch (_) {} } } } }); } catch (_) {}
+  });
 }
 export const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
